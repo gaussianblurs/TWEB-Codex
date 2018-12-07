@@ -19,7 +19,7 @@ module.exports = {
     "comma-dangle": [2, "never"],
     "no-param-reassign": [1],
     "no-underscore-dangle": "off",
-    "no-console": [2, { "allow": ["warn", "error"] }]
+    "no-console": [2, { "allow": ["warn", "error"] }],
   },
   "env": {
     "browser": true,
