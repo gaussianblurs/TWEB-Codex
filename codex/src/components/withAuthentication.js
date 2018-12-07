@@ -10,7 +10,7 @@ const withAuthentication = (Component) => {
       this.state = {
         authUser: null,
         idToken: null,
-        collaborator: null
+        user: null
       }
     }
 
@@ -22,19 +22,19 @@ const withAuthentication = (Component) => {
             // .then(() => this.fetchUserFromDb())
             .catch(error => console.error(error.message))
         } else {
-          this.setState({ authUser: null, idToken: null, collaborator: null })
+          this.setState({ authUser: null, idToken: null, user: null })
         }
       })
     }
 
     fetchUserFromDb = () => axios.get(`/collaborators/firebase/${this.state.authUser.uid}`, { headers: { Authorization: `Bearer ${this.state.idToken}` } })
-      .then(response => this.setState({ collaborator: response.data }))
+      .then(response => this.setState({ user: response.data }))
       .catch((error) => { console.error(error.message) })
 
     render() {
-      const { authUser, idToken, collaborator } = this.state
+      const { authUser, idToken, user } = this.state
       return (
-        <AuthUserContext.Provider value={{ authUser, idToken, collaborator }}>
+        <AuthUserContext.Provider value={{ authUser, idToken, user }}>
           <Component {...this.props} />
         </AuthUserContext.Provider>
       )
