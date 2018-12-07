@@ -11,6 +11,9 @@
 # production
 /build
 
+# IDE
+.vscode/
+
 # misc
 .directory
 .DS_Store
