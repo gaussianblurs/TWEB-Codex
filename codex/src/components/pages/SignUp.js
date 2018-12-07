@@ -67,7 +67,7 @@ class SignUp extends React.Component {
     return (
       <Container>
         <h1>Sign up</h1>
-        <Form error>
+        <Form error={error} onSubmit={this.onSubmit}>
           <Form.Input label="Full name" type="text" placeholder="Enter your full name" value={name} onChange={e => this.setState({ name: e.target.value })} />
           <Form.Input label="Email" type="email" placeholder="Enter your email" value={email} onChange={e => this.setState({ email: e.target.value })} />
           <Form.Input label="Password" type="password" placeholder="Enter your password" value={passwordOne} onChange={e => this.setState({ passwordOne: e.target.value })} />
