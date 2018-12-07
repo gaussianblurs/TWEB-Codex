@@ -54,15 +54,16 @@ class SignIn extends React.Component {
     const { email, password, error } = this.state
     return (
       <Container>
-        <Form error>
+        <h1>Sign in</h1>
+        <Form error onSubmit={this.onSubmit}>
           <Form.Input label="Email" type="email" placeholder="Enter your email" value={email} onChange={e => this.setState({ email: e.target.value })} />
           <Form.Input label="Password" type="password" placeholder="Enter your password" value={password} onChange={e => this.setState({ password: e.target.value })} />
           <Message
             error
             header="Error"
-            content={error.message}
+            content={error ? error.message : ''}
           />
-          <Button onClick={this.onSubmit}>Submit</Button>
+        <Button type="submit">Sign in</Button>
         </Form>
       </Container>
     )
