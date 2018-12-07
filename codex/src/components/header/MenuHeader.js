@@ -1,30 +1,28 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, withRouter } from 'react-router-dom'
 import { Menu, Container, Segment, Button } from 'semantic-ui-react'
 import * as routes from '../../constants/routes'
 import { auth } from '../../firebase'
 import AuthUserContext from '../AuthUserContext'
 
-const AuthNav = () => (
+const AuthNav = props => (
   <React.Fragment>
     <Button className="item" floated="right" onClick={auth.doSignOut}>Sign out</Button>
   </React.Fragment>
 )
 
-const NonAuthNav = () => (
+const NonAuthNav = props => (
   <React.Fragment>
-    <Menu.Item position="right">
-      <Link to={routes.SIGN_IN}>
-        Sign in
-      </Link>
-      <Link to={routes.SIGN_UP} style={{ marginLeft: '0.5em' }}>
-        Sign up
-      </Link>
+    <Menu.Item as={Link} position="right" to={routes.SIGN_IN} active={props.location.pathname === routes.SIGN_IN}>
+      Sign in
+    </Menu.Item>
+    <Menu.Item as={Link} to={routes.SIGN_UP} style={{ marginLeft: '0.5em' }} active={props.location.pathname === routes.SIGN_UP}>
+      Sign up
     </Menu.Item>
   </React.Fragment>
 )
 
-const MenuHeader = () => (
+const MenuHeader = props => (
   <Segment inverted>
     <Container>
       <Menu inverted pointing secondary>
@@ -33,7 +31,7 @@ const MenuHeader = () => (
         </Menu.Item>
         <AuthUserContext.Consumer>
           {
-            ({ authUser }) => (authUser ? <AuthNav /> : <NonAuthNav />)
+            ({ authUser }) => (authUser ? <AuthNav {...props} /> : <NonAuthNav {...props} />)
           }
         </AuthUserContext.Consumer>
       </Menu>
@@ -41,4 +39,4 @@ const MenuHeader = () => (
   </Segment>
 )
 
-export default MenuHeader
+export default withRouter(MenuHeader)
