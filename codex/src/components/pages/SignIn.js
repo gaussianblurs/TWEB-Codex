@@ -63,7 +63,7 @@ class SignIn extends React.Component {
             header="Error"
             content={error ? error.message : ''}
           />
-        <Button type="submit">Sign in</Button>
+          <Button type="submit">Sign in</Button>
         </Form>
       </Container>
     )

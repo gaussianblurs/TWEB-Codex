@@ -8,6 +8,7 @@ import {
 } from 'semantic-ui-react'
 import { auth } from '../../firebase'
 import * as routes from '../../constants/routes'
+import '../../assets/scss/SignUp.scss'
 
 const INITIAL_STATE = {
   name: '',
