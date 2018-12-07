@@ -4,7 +4,7 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import Main from './components/Main'
 import MenuHeader from './components/header/MenuHeader'
 import withAuthentication from './components/withAuthentication'
-import './assets/scss/Default.scss'
+import './assets/scss/App.scss'
 
 const App = () => (
   <BrowserRouter>
