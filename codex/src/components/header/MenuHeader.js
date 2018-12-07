@@ -1,10 +1,16 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { Button } from 'semantic-ui-react'
 import * as routes from '../../constants/routes'
+import { auth } from '../../firebase'
 import AuthUserContext from '../AuthUserContext'
 
 const AuthNav = () => (
-  <React.Fragment />
+  <React.Fragment>
+    <Button.Group floated="right">
+      <Button onClick={auth.doSignOut}>Sign out</Button>
+    </Button.Group>
+  </React.Fragment>
 )
 
 const NonAuthNav = () => (
