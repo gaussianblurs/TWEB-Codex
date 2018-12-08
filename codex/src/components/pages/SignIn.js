@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { Link } from 'react-router-dom'
 import {
   Container,
   Form,
@@ -72,6 +73,7 @@ class SignIn extends React.Component {
         <Form error={!!error} onSubmit={this.onSubmit}>
           <Form.Input label="Email" placeholder="Enter your email" type="email" name="email" value={email} onChange={this.handleUserInput} />
           <Form.Input label="Password" placeholder="Enter your password" type="password" name="password" value={password} onChange={this.handleUserInput} />
+          <p>Haven&apos;t joined yet ? <Link to={routes.SIGN_UP}>Sign up !</Link></p>
           <Message
             error
             header="Error"
