@@ -3,7 +3,7 @@ import { Container } from 'semantic-ui-react'
 
 const Home = () => (
   <Container>
-    <h1>home</h1>
+    <h1>Home</h1>
   </Container>
 )
 
