@@ -84,10 +84,10 @@ class SignUp extends React.Component {
       <Container>
         <h1>Sign up</h1>
         <Form error={!!error} onSubmit={this.onSubmit}>
-          <Form.Input label="Full name" type="text" name="name" placeholder="Enter your full name" value={name} onChange={this.handleUserInput} />
-          <Form.Input label="Email" type="email" name="email" placeholder="Enter your email" value={email} onChange={this.handleUserInput} />
-          <Form.Input label="Password" type="password" name="passwordOne" placeholder="Enter your password" value={passwordOne} onChange={this.handleUserInput} />
-          <Form.Input label="Confirm password" type="password" name="passwordTwo" placeholder="Enter your password again" value={passwordTwo} onChange={this.handleUserInput} />
+          <Form.Input label="Full name" placeholder="Enter your full name" type="text" name="name" value={name} onChange={this.handleUserInput} />
+          <Form.Input label="Email" placeholder="Enter your email" type="email" name="email" value={email} onChange={this.handleUserInput} />
+          <Form.Input label="Password" placeholder="Enter your password" type="password" name="passwordOne" value={passwordOne} onChange={this.handleUserInput} />
+          <Form.Input label="Confirm password" placeholder="Enter your password again" type="password" name="passwordTwo" value={passwordTwo} onChange={this.handleUserInput} />
           <Message
             error
             header="Error"
