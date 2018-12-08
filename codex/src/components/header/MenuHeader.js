@@ -1,13 +1,14 @@
 import React from 'react'
 import { Link, withRouter } from 'react-router-dom'
+import PropTypes from 'prop-types'
 import { Menu, Container, Segment, Button } from 'semantic-ui-react'
 import * as routes from '../../constants/routes'
 import { auth } from '../../firebase'
 import AuthUserContext from '../AuthUserContext'
 
-const AuthNav = props => (
+const AuthNav = () => (
   <React.Fragment>
-    <Button className="item" floated="right" onClick={auth.doSignOut}>Sign out</Button>
+    <Button as={Menu.Item} position="right" onClick={auth.doSignOut}>Sign out</Button>
   </React.Fragment>
 )
 
@@ -21,6 +22,12 @@ const NonAuthNav = props => (
     </Menu.Item>
   </React.Fragment>
 )
+
+NonAuthNav.propTypes = {
+  location: PropTypes.shape({
+    pathname: PropTypes.string.isRequired
+  }).isRequired
+}
 
 const MenuHeader = props => (
   <Segment inverted>
