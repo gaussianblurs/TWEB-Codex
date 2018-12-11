@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Button } from 'semantic-ui-react'
+import { Menu, Button } from 'semantic-ui-react'
 import * as routes from '../../constants/routes'
 import { auth } from '../../firebase'
 import AuthUserContext from '../AuthUserContext'
@@ -25,7 +25,7 @@ const NonAuthNav = () => (
 )
 
 const MenuHeader = () => (
-  <div className="ui inverted menu">
+  <Menu>
     <Link className="active item" to={routes.HOME}>
       CODEX
     </Link>
@@ -34,7 +34,7 @@ const MenuHeader = () => (
         ({ authUser }) => (authUser ? <AuthNav /> : <NonAuthNav />)
       }
     </AuthUserContext.Consumer>
-  </div>
+  </Menu>
 )
 
 export default MenuHeader
