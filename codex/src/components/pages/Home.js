@@ -1,9 +1,10 @@
 import React from 'react'
+import { Container } from 'semantic-ui-react'
 
 const Home = () => (
-  <div>
-    <h1>home</h1>
-  </div>
+  <Container>
+    <h1>Home</h1>
+  </Container>
 )
 
 export default Home

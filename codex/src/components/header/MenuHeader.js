@@ -1,40 +1,49 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
-import { Menu, Button } from 'semantic-ui-react'
+import { Link, withRouter } from 'react-router-dom'
+import PropTypes from 'prop-types'
+import { Menu, Container, Segment, Button } from 'semantic-ui-react'
 import * as routes from '../../constants/routes'
 import { auth } from '../../firebase'
 import AuthUserContext from '../AuthUserContext'
 
 const AuthNav = () => (
   <React.Fragment>
-    <Button.Group floated="right">
-      <Button onClick={auth.doSignOut}>Sign out</Button>
-    </Button.Group>
+    <Button as={Menu.Item} position="right" onClick={auth.doSignOut}>Sign out</Button>
   </React.Fragment>
 )
 
-const NonAuthNav = () => (
+const NonAuthNav = props => (
   <React.Fragment>
-    <Link className="item" to={routes.SIGN_IN}>
+    <Menu.Item as={Link} position="right" to={routes.SIGN_IN} active={props.location.pathname === routes.SIGN_IN}>
       Sign in
-    </Link>
-    <Link className="item" to={routes.SIGN_UP}>
+    </Menu.Item>
+    <Menu.Item as={Link} to={routes.SIGN_UP} style={{ marginLeft: '0.5em' }} active={props.location.pathname === routes.SIGN_UP}>
       Sign up
-    </Link>
+    </Menu.Item>
   </React.Fragment>
 )
 
-const MenuHeader = () => (
-  <Menu>
-    <Link className="active item" to={routes.HOME}>
-      CODEX
-    </Link>
-    <AuthUserContext.Consumer>
-      {
-        ({ authUser }) => (authUser ? <AuthNav /> : <NonAuthNav />)
-      }
-    </AuthUserContext.Consumer>
-  </Menu>
+NonAuthNav.propTypes = {
+  location: PropTypes.shape({
+    pathname: PropTypes.string.isRequired
+  }).isRequired
+}
+
+const MenuHeader = props => (
+  <Segment inverted>
+    <Container>
+      <Menu inverted pointing secondary>
+        <Menu.Item as={Link} to={routes.HOME}>
+          CODEX
+        </Menu.Item>
+        <AuthUserContext.Consumer>
+          {
+            ({ authUser }) => (authUser ? <AuthNav {...props} /> : <NonAuthNav {...props} />)
+          }
+        </AuthUserContext.Consumer>
+      </Menu>
+    </Container>
+  </Segment>
 )
 
-export default MenuHeader
+export default withRouter(MenuHeader)

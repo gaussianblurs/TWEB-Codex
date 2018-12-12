@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { Link } from 'react-router-dom'
 import {
   Container,
   Form,
@@ -25,6 +26,20 @@ class SignIn extends React.Component {
   constructor(props) {
     super(props)
     this.state = { ...INITIAL_STATE }
+  }
+
+  handleUserInput = (e) => {
+    this.setState({
+      [e.target.name]: e.target.value
+    })
+  }
+
+  isValidForm = () => {
+    const {
+      email,
+      password
+    } = this.state
+    return email !== '' && password !== ''
   }
 
   onSubmit = (event) => {
@@ -55,15 +70,16 @@ class SignIn extends React.Component {
     return (
       <Container>
         <h1>Sign in</h1>
-        <Form error={error} onSubmit={this.onSubmit}>
-          <Form.Input label="Email" type="email" placeholder="Enter your email" value={email} onChange={e => this.setState({ email: e.target.value })} />
-          <Form.Input label="Password" type="password" placeholder="Enter your password" value={password} onChange={e => this.setState({ password: e.target.value })} />
+        <Form error={!!error} onSubmit={this.onSubmit}>
+          <Form.Input label="Email" placeholder="Enter your email" type="email" name="email" value={email} onChange={this.handleUserInput} />
+          <Form.Input label="Password" placeholder="Enter your password" type="password" name="password" value={password} onChange={this.handleUserInput} />
+          <p>Haven&apos;t joined yet ? <Link to={routes.SIGN_UP}>Sign up !</Link></p>
           <Message
             error
             header="Error"
             content={error ? error.message : ''}
           />
-          <Button type="submit">Sign in</Button>
+          <Button type="submit" disabled={!this.isValidForm()}>Sign in</Button>
         </Form>
       </Container>
     )

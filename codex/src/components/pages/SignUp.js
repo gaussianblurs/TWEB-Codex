@@ -30,6 +30,22 @@ class SignUp extends React.Component {
     this.state = { ...INITIAL_STATE }
   }
 
+  handleUserInput = (e) => {
+    this.setState({
+      [e.target.name]: e.target.value
+    })
+  }
+
+  isValidForm = () => {
+    const {
+      name,
+      email,
+      passwordOne,
+      passwordTwo
+    } = this.state
+    return name !== '' && email !== '' && passwordOne !== '' && passwordOne === passwordTwo
+  }
+
   onSubmit = (event) => {
     event.preventDefault()
 
@@ -67,17 +83,17 @@ class SignUp extends React.Component {
     return (
       <Container>
         <h1>Sign up</h1>
-        <Form error={error} onSubmit={this.onSubmit}>
-          <Form.Input label="Full name" type="text" placeholder="Enter your full name" value={name} onChange={e => this.setState({ name: e.target.value })} />
-          <Form.Input label="Email" type="email" placeholder="Enter your email" value={email} onChange={e => this.setState({ email: e.target.value })} />
-          <Form.Input label="Password" type="password" placeholder="Enter your password" value={passwordOne} onChange={e => this.setState({ passwordOne: e.target.value })} />
-          <Form.Input label="Confirm password" type="password" placeholder="Enter your password again" value={passwordTwo} onChange={e => this.setState({ passwordTwo: e.target.value })} />
+        <Form error={!!error} onSubmit={this.onSubmit}>
+          <Form.Input label="Full name" placeholder="Enter your full name" type="text" name="name" value={name} onChange={this.handleUserInput} />
+          <Form.Input label="Email" placeholder="Enter your email" type="email" name="email" value={email} onChange={this.handleUserInput} />
+          <Form.Input label="Password" placeholder="Enter your password" type="password" name="passwordOne" value={passwordOne} onChange={this.handleUserInput} />
+          <Form.Input label="Confirm password" placeholder="Enter your password again" type="password" name="passwordTwo" value={passwordTwo} onChange={this.handleUserInput} />
           <Message
             error
             header="Error"
             content={error ? error.message : ''}
           />
-          <Button type="submit">Sign up</Button>
+          <Button type="submit" disabled={!this.isValidForm()}>Sign up</Button>
         </Form>
       </Container>
     )
