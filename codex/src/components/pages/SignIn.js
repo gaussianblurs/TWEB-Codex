@@ -73,7 +73,7 @@ class SignIn extends React.Component {
         <Form error={!!error} onSubmit={this.onSubmit}>
           <Form.Input label="Email" placeholder="Enter your email" type="email" name="email" value={email} onChange={this.handleUserInput} />
           <Form.Input label="Password" placeholder="Enter your password" type="password" name="password" value={password} onChange={this.handleUserInput} />
-          <p>Haven&apos;t joined yet ? <Link to={routes.SIGN_UP}>Sign up !</Link></p>
+          <p><Link to={routes.PASSWORD_FORGET}>Forgot your password ?</Link></p>
           <Message
             error
             header="Error"

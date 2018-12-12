@@ -18,7 +18,7 @@ const withAuthorization = authCondition => (Component) => {
     render() {
       return (
         <AuthUserContext.Consumer>
-          { ({ authUser, user }) => (authUser && user ?
+          { ({ authUser }) => (authUser ?
             <Component {...this.props} /> : <Spinner /> )}
         </AuthUserContext.Consumer>
       )
