@@ -4,7 +4,6 @@ import PropTypes from 'prop-types'
 import { Menu, Container, Segment, Button } from 'semantic-ui-react'
 import * as routes from '../../constants/routes'
 import { auth } from '../../firebase'
-import AuthUserContext from '../AuthUserContext'
 
 const AuthNav = () => (
   <React.Fragment>
@@ -36,14 +35,20 @@ const MenuHeader = props => (
         <Menu.Item as={Link} to={routes.HOME}>
           CODEX
         </Menu.Item>
-        <AuthUserContext.Consumer>
-          {
-            ({ authUser }) => (authUser ? <AuthNav {...props} /> : <NonAuthNav {...props} />)
-          }
-        </AuthUserContext.Consumer>
+        { props.authUser ? <AuthNav {...props} /> : <NonAuthNav {...props} /> }
       </Menu>
     </Container>
   </Segment>
 )
+
+MenuHeader.propTypes = {
+  authUser: PropTypes.shape({
+    uid: PropTypes.string.isRequired
+  })
+}
+
+MenuHeader.defaultProps = {
+  authUser: null
+}
 
 export default withRouter(MenuHeader)
