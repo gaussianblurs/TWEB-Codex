@@ -2,10 +2,25 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "contributors": [
+    "Joël Kaufmann",
+    "Pierre-Samuel Rochat",
+    "Arnold von Bauer Gauss"
+  ],
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "NODE_ENV=development nodemon src/server.js",
+    "serve": "NODE_ENV=production node src/server.js"
   },
   "author": "",
-  "license": "ISC"
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.16.4",
+    "nodemon": "^1.18.8"
+  },
+  "devDependencies": {
+    "eslint": "^5.10.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0"
+  }
 }
