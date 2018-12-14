@@ -1,17 +1,36 @@
 const express = require('express')
 const cors = require('cors')
+const firebase = require('firebase')
+require('firebase/firestore')
 const admin = require('firebase-admin')
 const bodyParser = require('body-parser')
+const elasticsearch = require('elasticsearch')
 
-
+// Firebase configs
 const serviceAccount = require('../serviceAccount')
+const firebaseConfig = require('../firebaseConfig')
 
+// Auth init
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 })
 
+// DB init
+firebase.initializeApp(firebaseConfig)
+const db = firebase.firestore()
+db.settings({
+  timestampsInSnapshots: true
+})
+
+// Elasticsearch client
+const esclient = new elasticsearch.Client({
+  host: 'localhost:9200'
+})
+
+// App init
 const app = express()
 
+// CORS options
 const corsOptions = {
   // origin: 'http://example.com',
   // exposedHeaders: 'pages',
@@ -59,6 +78,28 @@ const isUserAuthenticated = (req, res, next) => {
     message: 'FORBIDDEN'
   })
 }
+
+app.post('/users', (req, res, next) => {
+  db.collection('users').doc(req.body.uid).set({
+    fullname: req.body.name,
+    username: req.body.username
+  })
+    .then(() => res.sendStatus(200))
+    .catch(next)
+})
+
+app.get('/users/:id', (req, res, next) => {
+  db.collection('users').doc(req.params.id).get()
+    .then((doc) => {
+      if (doc.exists) {
+        res.send(doc.data())
+      } else {
+        const error = new Error('User not found')
+        error.status = 404
+        next(error)
+      }
+    })
+})
 
 // Forward 404 to error handler
 app.use((req, res, next) => {
