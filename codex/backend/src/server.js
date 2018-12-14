@@ -3,13 +3,12 @@ const cors = require('cors')
 const admin = require('firebase-admin')
 const bodyParser = require('body-parser')
 
-/*
-const serviceAccount = require('./serviceAccount')
+
+const serviceAccount = require('../serviceAccount')
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 })
-*/
 
 const app = express()
 
@@ -24,7 +23,6 @@ app.use(cors(corsOptions))
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
-/*
 // Get token from header
 const getBearerToken = authHeader => authHeader.split(' ')[1]
 
@@ -45,6 +43,7 @@ const isUserAuthenticated = (req, res, next) => {
   const token = getBearerToken(authHeader)
   if (token) {
     return verifyTokenAndGetUID(token)
+      // TODO: Find user in elasticsearch
       .then(userId => Collaborator.findOne({ firebaseId: userId })
         .then((collaborator) => {
           res.locals.user = collaborator
@@ -60,7 +59,6 @@ const isUserAuthenticated = (req, res, next) => {
     message: 'FORBIDDEN'
   })
 }
-*/
 
 // Forward 404 to error handler
 app.use((req, res, next) => {
