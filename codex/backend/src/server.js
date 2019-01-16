@@ -63,9 +63,9 @@ const isUserAuthenticated = (req, res, next) => {
   if (token) {
     return verifyTokenAndGetUID(token)
       // TODO: Find user in elasticsearch
-      .then(userId => Collaborator.findOne({ firebaseId: userId })
-        .then((collaborator) => {
-          res.locals.user = collaborator
+      .then(userId => db.collection('users').doc(userId).get()
+        .then((doc) => {
+          res.locals.user = doc.data()
           next()
         }))
       .catch(() => res.status(401).json({
