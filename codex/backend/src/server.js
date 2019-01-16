@@ -101,6 +101,90 @@ app.get('/users/:id', (req, res, next) => {
     })
 })
 
+// Posts API
+// Create
+app.post('/posts', (req, res, next) => {
+  esclient.create({
+    index: 'posts',
+    body: {
+      title: req.body.title,
+      description: req.body.description,
+      tags: req.body.tags,
+      content: req.bodycontent,
+      creator_id: req.body.user_id,
+      claps: 0,
+      creation_time: Date.now()
+    }
+  })
+    .then(() => res.sendStatus(201))
+    .catch(next)
+})
+
+// Read
+app.get('/posts/:id', (req, res, next) => {
+  esclient.search({
+    index: 'myindex',
+    q: `author:${req.body.query}`,
+    from: 0, // TODO pagination
+    size: 10
+  })
+    .then(posts => res.send(posts))
+    .catch(next)
+})
+
+// default search on all fields
+app.get('/defSearch/', (req, res, next) => {
+  esclient.search({
+    index: 'myindex',
+    q: `author:${req.body.query}`,
+    from: 0, // TODO pagination frontend?
+    size: 10
+  })
+    .then(posts => res.send(posts))
+    .catch(next)
+})
+
+// field specific search
+app.get('/search/', (req, res, next) => {
+  esclient.search({
+    index: 'myindex',
+    q: `author:${req.body.query}`,
+    from: 0, // TODO pagination frontend?
+    size: 10
+  })
+    .then(posts => res.send(posts))
+    .catch(next)
+})
+
+// Update
+app.update('/posts', (req, res, next) => {
+  esclient.update({
+    index: 'posts',
+    id: req.body.id,
+    body: {
+      doc: {
+        title: req.body.title,
+        description: req.body.description,
+        tags: req.body.tags,
+        content: req.bodycontent,
+        creator_id: req.body.user_id
+      }
+    }
+  })
+    .then(() => res.sendStatus(200))
+    .catch(next)
+})
+
+// Delete
+app.delete('/posts', (req, res, next) => {
+  esclient.delete({
+    index: 'posts',
+    id: req.body.postId
+  })
+    .then(() => res.sendStatus(200))
+    .catch(next)
+})
+
 // Forward 404 to error handler
 app.use((req, res, next) => {
   const error = new Error('Not found')
