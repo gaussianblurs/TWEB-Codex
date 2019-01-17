@@ -81,8 +81,8 @@ const isUserAuthenticated = (req, res, next) => {
 
 app.post('/users', (req, res, next) => {
   db.collection('users').doc(req.body.uid).set({
-    fullname: req.body.name,
-    username: req.body.username
+    nickname: req.body.nickname,
+    email: req.body.email
   })
     .then(() => res.sendStatus(201))
     .catch(next)
@@ -172,7 +172,7 @@ app.get('/posts/', (req, res, next) => {
     .catch(next)
 })
 
-/* TODO 
+/* TODO
 // Update
 app.put('/posts', (req, res, next) => {
   esclient.update({

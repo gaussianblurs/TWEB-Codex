@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Layout } from 'antd'
+import withAuthorization from '../withAuthorization'
 import Posts from '../posts/Posts'
 
 import '../../assets/scss/WallPage.scss'
@@ -42,4 +43,6 @@ class Wall extends React.Component {
   }
 }
 
-export default Wall
+const authCondition = authUser => !!authUser
+
+export default withAuthorization(authCondition)(Wall)

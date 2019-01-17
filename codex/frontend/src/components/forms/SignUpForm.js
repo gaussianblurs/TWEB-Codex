@@ -1,11 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { withRouter } from 'react-router-dom'
 import {
   Form,
   Input,
   Button,
   message
 } from 'antd'
+import axios from '../../axios'
 import { auth } from '../../firebase'
 import * as routes from '../../constants/routes'
 
@@ -34,6 +36,11 @@ class NormalSignUpForm extends React.Component {
         } = this.props
 
         auth.doCreateUserWithEmailAndPassword(email, password)
+          .then(firebaseUser => axios.post('/users', {
+            uid: firebaseUser.user.uid,
+            nickname,
+            email
+          }))
           .then(() => {
             history.push(routes.WALL)
           })
@@ -158,4 +165,4 @@ NormalSignUpForm.propTypes = {
 
 const WrappedSignUpForm = Form.create({ name: 'signup_form' })(NormalSignUpForm)
 
-export default WrappedSignUpForm
+export default withRouter(WrappedSignUpForm)

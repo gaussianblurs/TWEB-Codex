@@ -18,11 +18,11 @@ library.add(
 const App = () => (
   <AuthUserContext.Consumer>
     {
-      ({ authUser }) => (
+      ({ authUser, user, idToken }) => (
         <BrowserRouter>
           <Layout>
             <Header authUser={authUser} />
-            <Main authUser={authUser} />
+            <Main authUser={authUser} user={user} idToken={idToken} />
             <Footer />
           </Layout>
         </BrowserRouter>
