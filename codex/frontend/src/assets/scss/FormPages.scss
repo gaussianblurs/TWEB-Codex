@@ -1,0 +1,28 @@
+@import './Default.scss';
+
+.form-container {
+  position: absolute;
+  left: 0;
+  right: 0;
+  max-width: 480px;
+  margin: 0 auto;
+  border: 1px solid $border-color;
+  border-radius: 5px;
+  padding: 20px;
+  background-color: $light;
+  display: absolute;
+  box-shadow: 0px 0px 10px 5px rgba(0, 0, 0, 0.03);
+
+  .form-title {
+    text-align: center;
+  }
+
+  .login-form-forgot {
+    float: right;
+  }
+
+  .form-btn {
+    width: 100%;
+    margin: 5px 0;
+  }
+}

@@ -1,1 +1,89 @@
- @import '~semantic-ui-css/semantic.min.css';
+@import '~antd/dist/antd.css';
+
+$light: white;
+$dark: #091B2C;
+$border-color: #d9d9d9;
+
+$header-height: 64px;
+$footer-height: 90px;
+
+.ant-layout-content {
+  padding: 20px;
+  min-height: calc(100vh - #{$header-height} - #{$footer-height});
+  width: 100%;
+}
+
+.ant-layout-header {
+  background-color: $dark;
+
+  .ant-menu {
+    background-color: $dark;
+  }
+
+  .logo {
+    font-size: 20px;
+    color: $light;
+    display: inline-block;
+
+    .logo-img {
+      display: inline;
+      float: left;
+
+      img {
+        height: 30px;
+        margin: 0 15px 5px 0;
+      }
+    }
+
+    .logo-txt {
+      display: inline;
+      float: left;
+    }
+  }
+
+  .icon-hamburger {
+    float: right;
+    color: $light;
+    cursor: pointer;
+    line-height: $header-height;
+  }
+
+  .menu {
+    line-height: $header-height;
+  }
+
+  ul {
+    float: right;
+  }
+}
+
+.ant-layout-footer {
+  color: $light;
+  background-color: $dark;
+  height: $footer-height;
+
+  .footer-heart {
+    margin: 0 2px;
+    color: #c0392b;
+    margin-bottom: 1px;
+  }
+}
+
+.clearfix {
+  overflow: auto;
+
+  &::after {
+    clear: both;
+    display: table;
+  }
+}
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}

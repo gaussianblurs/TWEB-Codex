@@ -1,0 +1,31 @@
+@import 'Default.scss';
+
+.posts-container {
+  margin: 0 auto;
+  max-width: 800px;
+
+  .avatar {
+    float: left;
+    margin: 10px;
+  }
+
+  .post {
+    float: right;
+    margin: 10px;
+    width: calc(100% - 64px - 40px);
+    border: 1px solid $border-color;
+    border-radius: 5px;
+    padding: 15px 20px;
+    background-color: $light;
+    box-shadow: 0px 0px 10px 5px rgba(0, 0, 0, 0.03);
+
+    .description {
+      margin-bottom: 25px;
+    }
+
+    .code {
+      border-radius: 5px;
+      background-color: #091B2C !important;
+    }
+  }
+}

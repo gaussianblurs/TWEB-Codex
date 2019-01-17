@@ -1,21 +1,30 @@
 import React from 'react'
 import { BrowserRouter } from 'react-router-dom'
 import { library } from '@fortawesome/fontawesome-svg-core'
+import {
+  faHeart
+} from '@fortawesome/free-solid-svg-icons'
+import { Layout } from 'antd'
 import Main from './components/Main'
-import MenuHeader from './components/header/MenuHeader'
+import Header from './components/header/Header'
+import Footer from './components/footer/Footer'
 import withAuthentication from './components/withAuthentication'
 import AuthUserContext from './components/AuthUserContext'
-import './assets/scss/App.scss'
+
+library.add(
+  faHeart
+)
 
 const App = () => (
   <AuthUserContext.Consumer>
     {
       ({ authUser }) => (
         <BrowserRouter>
-          <div>
-            <MenuHeader authUser={authUser} />
+          <Layout>
+            <Header authUser={authUser} />
             <Main authUser={authUser} />
-          </div>
+            <Footer />
+          </Layout>
         </BrowserRouter>
       )
     }
