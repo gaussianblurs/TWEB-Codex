@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { Layout } from 'antd'
 import SignUpForm from '../forms/SignUpForm'
 
@@ -65,11 +66,17 @@ class SignUpPage extends React.Component {
           <div className="form-title">
             <h2>Sign Up</h2>
           </div>
-          <SignUpForm />
+          <SignUpForm history={this.props.history} />
         </div>
       </Content>
     )
   }
+}
+
+SignUpPage.propTypes = {
+  history: PropTypes.PropTypes.shape({
+    push: PropTypes.func
+  }).isRequired
 }
 
 export default SignUpPage

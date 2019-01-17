@@ -8,7 +8,72 @@ const INITIAL_STATE = {
   posts: [
     {
       id: 1,
-      title: 'React Proptypes',
+      title: 'When to Use Context',
+      description:
+      'Context is designed to share data that can be considered “global” \
+      for a tree of React components, such as the current authenticated user, \
+      theme, or preferred language. For example, in the code below we manually \
+      thread through a “theme” prop in order to style the Button component:',
+      code:
+      'class App extends React.Component { \n \
+        render() { \n \
+          return <Toolbar theme="dark" />; \n \
+        } \n \
+      }',
+      content: 'nbasvdjhasgdjhgashjgdhj',
+      claps: 1000,
+      user: '@psrochat'
+    },
+    {
+      id: 1,
+      title: 'When to Use Context',
+      description:
+      'Context is designed to share data that can be considered “global” \
+      for a tree of React components, such as the current authenticated user, \
+      theme, or preferred language. For example, in the code below we manually \
+      thread through a “theme” prop in order to style the Button component:',
+      code:
+      'class App extends React.Component { \n \
+        render() { \n \
+          return <Toolbar theme="dark" />; \n \
+        } \n \
+      }',
+      content: 'nbasvdjhasgdjhgashjgdhj',
+      claps: 1000,
+      user: '@psrochat'
+    },
+    {
+      id: 1,
+      title: 'When to Use Context',
+      description:
+      'Context is designed to share data that can be considered “global” \
+      for a tree of React components, such as the current authenticated user, \
+      theme, or preferred language. For example, in the code below we manually \
+      thread through a “theme” prop in order to style the Button component:',
+      code:
+      'class App extends React.Component { \n \
+        render() { \n \
+          return <Toolbar theme="dark" />; \n \
+        } \n \
+      }',
+      content: 'nbasvdjhasgdjhgashjgdhj',
+      claps: 1000,
+      user: '@psrochat'
+    },
+    {
+      id: 1,
+      title: 'When to Use Context',
+      description:
+      'Context is designed to share data that can be considered “global” \
+      for a tree of React components, such as the current authenticated user, \
+      theme, or preferred language. For example, in the code below we manually \
+      thread through a “theme” prop in order to style the Button component:',
+      code:
+      'class App extends React.Component { \n \
+        render() { \n \
+          return <Toolbar theme="dark" />; \n \
+        } \n \
+      }',
       content: 'nbasvdjhasgdjhgashjgdhj',
       claps: 1000,
       user: '@psrochat'
