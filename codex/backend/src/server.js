@@ -102,16 +102,17 @@ app.get('/users/:id', isUserAuthenticated, (req, res, next) => {
 })
 
 // Posts API
-// Create
-app.post('/posts', (req, res, next) => {
-  esclient.create({
+// Create a post
+app.put('/posts', (req, res, next) => {
+  esclient.index({
     index: 'posts',
+    type: 'post',
     body: {
       title: req.body.title,
       description: req.body.description,
       tags: req.body.tags,
       content: req.bodycontent,
-      creator_id: req.body.user_id,
+      creator_id: req.body.user_id,                           // TODO manage users ?
       claps: 0,
       creation_time: Date.now()
     }
@@ -120,23 +121,50 @@ app.post('/posts', (req, res, next) => {
     .catch(next)
 })
 
-// Read
+// Find a post by its id
 app.get('/posts/:id', (req, res, next) => {
   esclient.search({
-    index: 'myindex',
-    q: `author:${req.body.query}`,
-    from: 0, // TODO pagination
+    index: 'posts',
+    q: `_id:${req.params.id}`,
+  })
+    .then(post => res.send(JSON.stringify(post, null, 2)))
+    .catch(next)
+})
+
+
+// Find posts by single field
+app.get('/posts/:field/:value', (req, res, next) => {
+  const value = decodeURIComponent(req.params.value)          // TODO encodeURI frontend
+  let searchQuery
+  switch (req.params.field) {
+    case 'title' :
+      searchQuery = `title:${value}`
+      break
+    case 'description' :
+      searchQuery = `description:${value}`
+      break
+    case 'author':
+      searchQuery = `creator_id:${value}`
+      break
+    case 'tag':
+      searchQuery = `tags:${value}`
+      break
+  }
+  esclient.search({
+    index: 'posts',
+    q: searchQuery,
+    from: 0,                                                  // TODO pagination, score? split?
     size: 10
   })
-    .then(posts => res.send(posts))
+  .then(post => res.send(JSON.stringify(post, null, 2)))
     .catch(next)
 })
 
 // default search on all fields
-app.get('/defSearch/', (req, res, next) => {
+app.get('/posts/', (req, res, next) => {
   esclient.search({
-    index: 'myindex',
-    q: `author:${req.body.query}`,
+    index: 'posts',
+    q: `author:${req.body.query}`, // TODO multi search
     from: 0, // TODO pagination frontend?
     size: 10
   })
@@ -144,20 +172,9 @@ app.get('/defSearch/', (req, res, next) => {
     .catch(next)
 })
 
-// field specific search
-app.get('/search/', (req, res, next) => {
-  esclient.search({
-    index: 'myindex',
-    q: `author:${req.body.query}`,
-    from: 0, // TODO pagination frontend?
-    size: 10
-  })
-    .then(posts => res.send(posts))
-    .catch(next)
-})
-
+/* TODO 
 // Update
-app.update('/posts', (req, res, next) => {
+app.put('/posts', (req, res, next) => {
   esclient.update({
     index: 'posts',
     id: req.body.id,
@@ -174,12 +191,13 @@ app.update('/posts', (req, res, next) => {
     .then(() => res.sendStatus(200))
     .catch(next)
 })
+*/
 
 // Delete
-app.delete('/posts', (req, res, next) => {
+app.delete('/posts/:id', (req, res, next) => {
   esclient.delete({
     index: 'posts',
-    id: req.body.postId
+    _id: req.params.id
   })
     .then(() => res.sendStatus(200))
     .catch(next)
