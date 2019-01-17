@@ -84,11 +84,11 @@ app.post('/users', (req, res, next) => {
     fullname: req.body.name,
     username: req.body.username
   })
-    .then(() => res.sendStatus(200))
+    .then(() => res.sendStatus(201))
     .catch(next)
 })
 
-app.get('/users/:id', (req, res, next) => {
+app.get('/users/:id', isUserAuthenticated, (req, res, next) => {
   db.collection('users').doc(req.params.id).get()
     .then((doc) => {
       if (doc.exists) {

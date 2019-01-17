@@ -19,7 +19,7 @@ const withAuthentication = (Component) => {
         if (authUser) {
           authUser.getIdToken(true)
             .then(idToken => this.setState({ authUser, idToken }))
-            // .then(() => this.fetchUserFromDb())
+            .then(() => this.fetchUserFromDb())
             .catch(error => console.error(error.message))
         } else {
           this.setState({ authUser: null, idToken: null, user: null })
@@ -27,7 +27,7 @@ const withAuthentication = (Component) => {
       })
     }
 
-    fetchUserFromDb = () => axios.get(`/collaborators/firebase/${this.state.authUser.uid}`, { headers: { Authorization: `Bearer ${this.state.idToken}` } })
+    fetchUserFromDb = () => axios.get(`/users/${this.state.authUser.uid}`, { headers: { Authorization: `Bearer ${this.state.idToken}` } })
       .then(response => this.setState({ user: response.data }))
       .catch((error) => { console.error(error.message) })
 
