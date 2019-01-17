@@ -116,4 +116,4 @@ MenuHeader.defaultProps = {
   authUser: null
 }
 
-export default withRouter(MenuHeader)
+export default MenuHeader

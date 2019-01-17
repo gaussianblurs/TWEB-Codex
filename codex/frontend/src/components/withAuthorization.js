@@ -9,7 +9,6 @@ const withAuthorization = authCondition => (Component) => {
   class WithAuthorization extends React.Component {
     componentDidMount() {
       firebaseAuth.onAuthStateChanged((authUser) => {
-        console.log('signOut')
         if (!authCondition(authUser)) {
           this.props.history.push(routes.SIGN_IN)
         }
@@ -19,7 +18,7 @@ const withAuthorization = authCondition => (Component) => {
     render() {
       return (
         <AuthUserContext.Consumer>
-          { ({ authUser }) => (authUser ?
+          { ({ authUser, user }) => (authUser && user ?
             <Component {...this.props} /> : <Spinner /> )}
         </AuthUserContext.Consumer>
       )

@@ -22,11 +22,18 @@ const Main = props => (
 Main.propTypes = {
   authUser: PropTypes.shape({
     uid: PropTypes.string.isRequired
+  }),
+  idToken: PropTypes.string,
+  user: PropTypes.shape({
+    email: PropTypes.string.isRequired,
+    nickname: PropTypes.string.isRequired
   })
 }
 
 Main.defaultProps = {
-  authUser: null
+  authUser: null,
+  idToken: null,
+  user: null
 }
 
 export default Main

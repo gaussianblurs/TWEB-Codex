@@ -63,9 +63,9 @@ const isUserAuthenticated = (req, res, next) => {
   if (token) {
     return verifyTokenAndGetUID(token)
       // TODO: Find user in elasticsearch
-      .then(userId => Collaborator.findOne({ firebaseId: userId })
-        .then((collaborator) => {
-          res.locals.user = collaborator
+      .then(userId => db.collection('users').doc(userId).get()
+        .then((doc) => {
+          res.locals.user = doc.data()
           next()
         }))
       .catch(() => res.status(401).json({
@@ -81,14 +81,14 @@ const isUserAuthenticated = (req, res, next) => {
 
 app.post('/users', (req, res, next) => {
   db.collection('users').doc(req.body.uid).set({
-    fullname: req.body.name,
-    username: req.body.username
+    nickname: req.body.nickname,
+    email: req.body.email
   })
-    .then(() => res.sendStatus(200))
+    .then(() => res.sendStatus(201))
     .catch(next)
 })
 
-app.get('/users/:id', (req, res, next) => {
+app.get('/users/:id', isUserAuthenticated, (req, res, next) => {
   db.collection('users').doc(req.params.id).get()
     .then((doc) => {
       if (doc.exists) {
@@ -99,6 +99,108 @@ app.get('/users/:id', (req, res, next) => {
         next(error)
       }
     })
+})
+
+// Posts API
+// Create a post
+app.put('/posts', (req, res, next) => {
+  esclient.index({
+    index: 'posts',
+    type: 'post',
+    body: {
+      title: req.body.title,
+      description: req.body.description,
+      tags: req.body.tags,
+      content: req.bodycontent,
+      creator_id: req.body.user_id,                           // TODO manage users ?
+      claps: 0,
+      creation_time: Date.now()
+    }
+  })
+    .then(() => res.sendStatus(201))
+    .catch(next)
+})
+
+// Find a post by its id
+app.get('/posts/:id', (req, res, next) => {
+  esclient.search({
+    index: 'posts',
+    q: `_id:${req.params.id}`,
+  })
+    .then(post => res.send(JSON.stringify(post, null, 2)))
+    .catch(next)
+})
+
+
+// Find posts by single field
+app.get('/posts/:field/:value', (req, res, next) => {
+  const value = decodeURIComponent(req.params.value)          // TODO encodeURI frontend
+  let searchQuery
+  switch (req.params.field) {
+    case 'title' :
+      searchQuery = `title:${value}`
+      break
+    case 'description' :
+      searchQuery = `description:${value}`
+      break
+    case 'author':
+      searchQuery = `creator_id:${value}`
+      break
+    case 'tag':
+      searchQuery = `tags:${value}`
+      break
+  }
+  esclient.search({
+    index: 'posts',
+    q: searchQuery,
+    from: 0,                                                  // TODO pagination, score? split?
+    size: 10
+  })
+  .then(post => res.send(JSON.stringify(post, null, 2)))
+    .catch(next)
+})
+
+// default search on all fields
+app.get('/posts/', (req, res, next) => {
+  esclient.search({
+    index: 'posts',
+    q: `author:${req.body.query}`, // TODO multi search
+    from: 0, // TODO pagination frontend?
+    size: 10
+  })
+    .then(posts => res.send(posts))
+    .catch(next)
+})
+
+/* TODO
+// Update
+app.put('/posts', (req, res, next) => {
+  esclient.update({
+    index: 'posts',
+    id: req.body.id,
+    body: {
+      doc: {
+        title: req.body.title,
+        description: req.body.description,
+        tags: req.body.tags,
+        content: req.bodycontent,
+        creator_id: req.body.user_id
+      }
+    }
+  })
+    .then(() => res.sendStatus(200))
+    .catch(next)
+})
+*/
+
+// Delete
+app.delete('/posts/:id', (req, res, next) => {
+  esclient.delete({
+    index: 'posts',
+    _id: req.params.id
+  })
+    .then(() => res.sendStatus(200))
+    .catch(next)
 })
 
 // Forward 404 to error handler
