@@ -103,7 +103,7 @@ app.get('/users/:id', isUserAuthenticated, (req, res, next) => {
 
 // Posts API
 // Create a post
-app.put('/posts', (req, res, next) => {
+app.post('/posts', (req, res, next) => {
   esclient.index({
     index: 'posts',
     type: 'post',
@@ -112,7 +112,7 @@ app.put('/posts', (req, res, next) => {
       description: req.body.description,
       tags: req.body.tags,
       content: req.bodycontent,
-      creator_id: req.body.user_id,                           // TODO manage users ?
+      creator_id: req.body.user_id, // TODO manage users ?
       claps: 0,
       creation_time: Date.now()
     }
@@ -125,7 +125,7 @@ app.put('/posts', (req, res, next) => {
 app.get('/posts/:id', (req, res, next) => {
   esclient.search({
     index: 'posts',
-    q: `_id:${req.params.id}`,
+    q: `_id:${req.params.id}`
   })
     .then(post => res.send(JSON.stringify(post, null, 2)))
     .catch(next)
@@ -134,13 +134,13 @@ app.get('/posts/:id', (req, res, next) => {
 
 // Find posts by single field
 app.get('/posts/:field/:value', (req, res, next) => {
-  const value = decodeURIComponent(req.params.value)          // TODO encodeURI frontend
+  const value = decodeURIComponent(req.params.value) // TODO encodeURI frontend
   let searchQuery
   switch (req.params.field) {
-    case 'title' :
+    case 'title':
       searchQuery = `title:${value}`
       break
-    case 'description' :
+    case 'description':
       searchQuery = `description:${value}`
       break
     case 'author':
@@ -149,14 +149,17 @@ app.get('/posts/:field/:value', (req, res, next) => {
     case 'tag':
       searchQuery = `tags:${value}`
       break
+    default:
+      res.sendStatus(400)
+      return
   }
   esclient.search({
     index: 'posts',
     q: searchQuery,
-    from: 0,                                                  // TODO pagination, score? split?
+    from: 0, // TODO pagination, score? split?
     size: 10
   })
-  .then(post => res.send(JSON.stringify(post, null, 2)))
+    .then(post => res.send(JSON.stringify(post, null, 2)))
     .catch(next)
 })
 
