@@ -25,7 +25,7 @@ const INITIAL_STATE = {
       user: '@psrochat'
     },
     {
-      id: 1,
+      id: 2,
       title: 'When to Use Context',
       description:
       'Context is designed to share data that can be considered “global” \
@@ -43,7 +43,7 @@ const INITIAL_STATE = {
       user: '@psrochat'
     },
     {
-      id: 1,
+      id: 3,
       title: 'When to Use Context',
       description:
       'Context is designed to share data that can be considered “global” \
@@ -61,7 +61,7 @@ const INITIAL_STATE = {
       user: '@psrochat'
     },
     {
-      id: 1,
+      id: 4,
       title: 'When to Use Context',
       description:
       'Context is designed to share data that can be considered “global” \
@@ -82,30 +82,16 @@ const INITIAL_STATE = {
 }
 
 class Posts extends React.Component {
-  static propTypes = {
-    authUser: PropTypes.shape({
-      uuid: PropTypes.string.isRequired
-    }).isRequired
-  }
-
   constructor(props) {
     super(props)
     this.state = { ...INITIAL_STATE }
-  }
-
-  fetchPosts = () => {
-
-  }
-
-  fetchMore = () => {
-
   }
 
   render() {
     const { posts } = this.state
 
     return (
-      <div>
+      <div className="posts-container">
         <InfiniteScroll
           dataLength={1}
           next={this.fetchMore}

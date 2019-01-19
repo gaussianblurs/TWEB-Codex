@@ -1,4 +1,4 @@
-@import '~antd/dist/antd.css';
+@import "~antd/dist/antd.css";
 
 $light: white;
 $dark: #091B2C;
@@ -7,8 +7,13 @@ $border-color: #d9d9d9;
 $header-height: 64px;
 $footer-height: 90px;
 
+.main-container {
+  margin: 0 auto;
+  max-width: 800px;
+}
+
 .ant-layout-content {
-  padding: 20px;
+  padding: 30px 20px;
   min-height: calc(100vh - #{$header-height} - #{$footer-height});
   width: 100%;
 }
@@ -18,6 +23,10 @@ $footer-height: 90px;
 
   .ant-menu {
     background-color: $dark;
+  }
+
+  .ant-dropdown {
+    border-radius: 4px !important;
   }
 
   .logo {
@@ -69,12 +78,17 @@ $footer-height: 90px;
   }
 }
 
-.clearfix {
-  overflow: auto;
+.ant-form-item-label {
+  padding-right: 10px;
+}
 
+.ant-radio-wrapper {
+  margin-right: 20px;
+}
+
+.clearfix {
   &::after {
     clear: both;
-    display: table;
   }
 }
 

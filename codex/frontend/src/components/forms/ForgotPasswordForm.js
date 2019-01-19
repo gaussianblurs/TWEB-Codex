@@ -1,14 +1,10 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import {
   Form,
-  Icon,
   Input,
   Button
 } from 'antd'
-import * as routes from '../../constants/routes'
-import '../../assets/scss/FormPages.scss'
 
 class NormalForgotPasswordForm extends React.Component {
   handleSubmit = (e) => {
