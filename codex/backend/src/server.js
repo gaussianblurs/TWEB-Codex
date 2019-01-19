@@ -174,9 +174,6 @@ app.get('/posts/:field/:value', (req, res, next) => {
 // Update
 // id and creator_id cannot be modified
 app.put('/posts', (req, res, next) => {
-  console.log(req.body)
-  console.log(req.body.id)
-  console.log(req.body.title)
   esclient.update({
     index: 'posts',
     type: 'post',
@@ -191,6 +188,27 @@ app.put('/posts', (req, res, next) => {
     }
   })
     .then(() => res.sendStatus(200))
+    .catch(next)
+})
+
+/**
+ * CLAPS API
+ */
+// increment claps to a post
+app.put('/posts/:id/update-claps', (req, res, next) => {            // TODO prevent from direct access?
+   esclient.update({
+    index: 'posts',
+    type: 'post',
+    id: req.params.id,
+    body: {
+      script: 'ctx._source.claps += 1',
+      upsert: {
+        counter: 1
+      }
+    },
+    retryOnConflict : 5
+  })
+    .then(() => res.status(200).send('OK'))
     .catch(next)
 })
 
