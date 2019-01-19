@@ -79,6 +79,10 @@ const isUserAuthenticated = (req, res, next) => {
   })
 }
 
+/**
+ * USER API
+ */
+// Create user
 app.post('/users', (req, res, next) => {
   db.collection('users').doc(req.body.uid).set({
     nickname: req.body.nickname,
@@ -88,6 +92,7 @@ app.post('/users', (req, res, next) => {
     .catch(next)
 })
 
+// Get user
 app.get('/users/:id', isUserAuthenticated, (req, res, next) => {
   db.collection('users').doc(req.params.id).get()
     .then((doc) => {
@@ -101,7 +106,10 @@ app.get('/users/:id', isUserAuthenticated, (req, res, next) => {
     })
 })
 
-// Posts API
+
+/**
+ * POSTS API
+ */
 // Create a post
 app.post('/posts', (req, res, next) => {
   esclient.index({
@@ -111,7 +119,7 @@ app.post('/posts', (req, res, next) => {
       title: req.body.title,
       description: req.body.description,
       tags: req.body.tags,
-      content: req.bodycontent,
+      content: req.body.content,
       creator_id: req.body.user_id, // TODO manage users ?
       claps: 0,
       creation_time: Date.now()
@@ -156,51 +164,42 @@ app.get('/posts/:field/:value', (req, res, next) => {
   esclient.search({
     index: 'posts',
     q: searchQuery,
-    from: 0, // TODO pagination, score? split?
+    from: 0, // TODO pagination, score? split fields?
     size: 10
   })
     .then(post => res.send(JSON.stringify(post, null, 2)))
     .catch(next)
 })
 
-// default search on all fields
-app.get('/posts/', (req, res, next) => {
-  esclient.search({
-    index: 'posts',
-    q: `author:${req.body.query}`, // TODO multi search
-    from: 0, // TODO pagination frontend?
-    size: 10
-  })
-    .then(posts => res.send(posts))
-    .catch(next)
-})
-
-/* TODO
 // Update
+// id and creator_id cannot be modified
 app.put('/posts', (req, res, next) => {
+  console.log(req.body)
+  console.log(req.body.id)
+  console.log(req.body.title)
   esclient.update({
     index: 'posts',
+    type: 'post',
     id: req.body.id,
     body: {
       doc: {
         title: req.body.title,
         description: req.body.description,
         tags: req.body.tags,
-        content: req.bodycontent,
-        creator_id: req.body.user_id
+        content: req.body.content
       }
     }
   })
     .then(() => res.sendStatus(200))
     .catch(next)
 })
-*/
 
 // Delete
 app.delete('/posts/:id', (req, res, next) => {
   esclient.delete({
     index: 'posts',
-    _id: req.params.id
+    type: 'post',
+    id: req.params.id
   })
     .then(() => res.sendStatus(200))
     .catch(next)
