@@ -62,7 +62,6 @@ const isUserAuthenticated = (req, res, next) => {
   const token = getBearerToken(authHeader)
   if (token) {
     return verifyTokenAndGetUID(token)
-      // TODO: Find user in elasticsearch
       .then(userId => db.collection('users').doc(userId).get()
         .then((doc) => {
           res.locals.user = doc.data()
@@ -125,8 +124,32 @@ app.post('/posts', (req, res, next) => {
       creation_time: Date.now()
     }
   })
-    .then(() => res.sendStatus(201))
-    .catch(next)
+    .then(() => {
+        res.sendStatus(201)
+        
+        // add new tags to DB
+        esclient.search({
+          index: 'tags',
+          type: 'tags',
+        })
+          .then(result => {
+            let tags = []; // current tags
+            result.hits.hits.forEach(item => tags.push(item._source.tag));
+            
+            req.body.tags.forEach(tag => {
+              if (!tags.find(t => t === tag)) {
+                esclient.index({
+                  index: 'tags',
+                  type: 'tags',
+                  body: {
+                    tag: tag
+                  }
+                })
+              }
+            })
+          })
+          .catch(next)
+    })
 })
 
 // Find a post by its id
@@ -135,7 +158,7 @@ app.get('/posts/:id', (req, res, next) => {
     index: 'posts',
     q: `_id:${req.params.id}`
   })
-    .then(post => res.send(JSON.stringify(post, null, 2)))
+    .then(post => res.send(JSON.stringify(post.hits.hits[0], null, 2)))
     .catch(next)
 })
 
@@ -164,10 +187,12 @@ app.get('/posts/:field/:value', (req, res, next) => {
   esclient.search({
     index: 'posts',
     q: searchQuery,
-    from: 0, // TODO pagination, score? split fields?
-    size: 10
+    from: req.query.offset,
+    size: req.query.pagesize
   })
-    .then(post => res.send(JSON.stringify(post, null, 2)))
+    .then(post => {
+      res.send(JSON.stringify(post.hits.hits, null, 2))
+    })
     .catch(next)
 })
 
@@ -220,6 +245,51 @@ app.delete('/posts/:id', (req, res, next) => {
     id: req.params.id
   })
     .then(() => res.sendStatus(200))
+    .catch(next)
+})
+
+/**
+ * TAGS API
+ */
+// add tag to index of all tags
+app.post('/tags/:tag', (req, res, next) => {
+  esclient.index({
+    index: 'tags',
+    type: 'tags',
+    body: {
+      tag: req.params.tag,
+    }
+  })
+    .then(() => res.sendStatus(201))
+    .catch(next)
+})
+
+// get all tags
+app.get('/tags/', (req, res, next) => {
+  esclient.search({
+    index: 'tags',
+    type: 'tags'
+  })
+    .then(result => {
+      let tags = [];
+      result.hits.hits.forEach(item => tags.push(item._source.tag));
+      res.status(200).send(tags)
+    })
+    .catch(next)
+})
+
+// get tags like param
+app.get('/tags/:tag', (req, res, next) => {
+  esclient.search({
+    index: 'tags',
+    type: 'tags',
+    q: `tag:${req.params.tag}*`
+  })
+    .then(result => {
+      let tags = [];
+      result.hits.hits.forEach(item => tags.push(item._source.tag));
+      res.status(200).send(tags)
+    })
     .catch(next)
 })
 
