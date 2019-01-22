@@ -20,16 +20,18 @@ const AuthNav = () => (
   </React.Fragment>
 )
 
-const NonAuthNav = () => (
-  <Menu
-    className="menu"
-    theme="dark"
-    mode="horizontal"
-  >
-    <Menu.Item key="1"><Link to={routes.SIGN_IN}>Sign In</Link></Menu.Item>
-    <Menu.Item key="2"><Link to={routes.SIGN_UP}>Sign Up</Link></Menu.Item>
-    <Menu.Item key="3"><Button type="primary" onClick={auth.doSignOut}>Sign Out</Button></Menu.Item>
-  </Menu>
+const NonAuthNav = props => (
+  <React.Fragment>
+    <Menu
+      className="menu"
+      theme="dark"
+      mode="horizontal"
+    >
+      <Menu.Item key="1"><Link to={routes.SIGN_IN}>Sign In</Link></Menu.Item>
+      <Menu.Item key="2"><Link to={routes.SIGN_UP}>Sign Up</Link></Menu.Item>
+      <Menu.Item key="3"><Button type="primary" onClick={auth.doSignOut}>Sign Out</Button></Menu.Item>
+    </Menu>
+  </React.Fragment>
 )
 
 NonAuthNav.propTypes = {

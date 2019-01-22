@@ -1,27 +1,27 @@
 import React from 'react'
-import PropTypes from 'prop-types'
-import { Layout } from 'antd'
+import { Layout, Button, Tooltip } from 'antd'
 import withAuthorization from '../withAuthorization'
 import Posts from '../posts/Posts'
+import SearchHeader from '../posts/SearchHeader'
+import PostModal from '../posts/PostModal'
 
 import '../../assets/scss/WallPage.scss'
 
 const { Content } = Layout
 
 const INITIAL_STATE = {
-  posts: []
+  posts: [],
+  modalVisible: false
 }
 
 class Wall extends React.Component {
-  static propTypes = {
-    authUser: PropTypes.shape({
-      uuid: PropTypes.string.isRequired
-    }).isRequired
-  }
-
   constructor(props) {
     super(props)
     this.state = { ...INITIAL_STATE }
+  }
+
+  setModalVisible = (modalVisible) => {
+    this.setState({ modalVisible })
   }
 
   fetchPosts = () => {
@@ -33,12 +33,31 @@ class Wall extends React.Component {
   }
 
   render() {
+    const { modalVisible } = this.state
+
     return (
-      <Content>
-        <div className="posts-container">
-          <Posts />
+      <React.Fragment>
+        <SearchHeader />
+        <div>
+          <Content>
+            <div className="main-container">
+              <Posts />
+            </div>
+            <div className="post-btn-container clearfix">
+              <Tooltip placement="left" title="Create Post">
+                <Button
+                  type="primary"
+                  className="post-btn"
+                  onClick={() => this.setModalVisible(true)}
+                  shape="circle"
+                  icon="plus"
+                />
+              </Tooltip>
+            </div>
+            <PostModal modalVisible={modalVisible} setModalVisible={this.setModalVisible} />
+          </Content>
         </div>
-      </Content>
+      </React.Fragment>
     )
   }
 }

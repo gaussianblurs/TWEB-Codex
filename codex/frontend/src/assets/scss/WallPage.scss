@@ -1,31 +1,119 @@
 @import 'Default.scss';
 
-.posts-container {
-  margin: 0 auto;
-  max-width: 800px;
+.query-header {
+  background-color: $light;
+  box-shadow: 0px 0px 10px 5px rgba(0, 0, 0, 0.03);
+  padding: 10px 55px;
+  border-bottom: 1px solid $border-color;
 
+  .query-form-container {
+    float: right;
+  }
+
+  .ant-select {
+    width: 300px;
+  }
+
+  .query-input {
+    width: 300px;
+  }
+}
+
+.posts-container {
   .avatar {
-    float: left;
-    margin: 10px;
+    @media (min-width: 768px) {
+      float: left;
+    }
+    margin: 15px 10px;
   }
 
   .post {
-    float: right;
-    margin: 10px;
-    width: calc(100% - 64px - 40px);
+    @media (min-width: 768px) {
+      float: right;
+      width: calc(100% - 64px - 40px);
+    }
+    width: calc(100% - 20px);
+    margin: 15px 10px;
     border: 1px solid $border-color;
     border-radius: 5px;
     padding: 15px 20px;
     background-color: $light;
     box-shadow: 0px 0px 10px 5px rgba(0, 0, 0, 0.03);
 
-    .description {
-      margin-bottom: 25px;
+    .tags {
+      margin-bottom: 15px;
     }
 
-    .code {
-      border-radius: 5px;
-      background-color: #091B2C !important;
+    .description {
+      margin-bottom: 25px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .code-container {
+      margin-bottom: 30px;
+
+      .code {
+        border-radius: 5px;
+        background-color: #091B2C !important;
+      }
+    }
+
+    .post-date {
+      @media (min-width: 768px) {
+        float: right;
+      }
+      margin-top: 10px;
+      vertical-align: middle;
+      display: inline-block;
+      max-width: 100%;
+      hyphens: auto;
+    }
+
+    .claps {
+      @media (min-width: 768px) {
+        float: left;
+      }
+      min-width: 200px;
+
+      .claps-inc {
+        padding: 0 0 0 20px;
+        vertical-align: bottom;
+        line-height: 40px;
+        display: inline-block;
+      }
+
+      .claps-btn {
+        display: inline-block;
+        .btn-icon {
+          padding: 5px 0 0 1px;
+          font-size: 25px;
+        }
+
+        .ant-badge-count {
+          background-color: #fff;
+          color: #595959;
+          box-shadow: 0 0 0 1px #d9d9d9 inset;
+        }
+      }
     }
   }
+}
+
+.post-btn-container {
+  position: sticky;
+  bottom: 25px;
+  width: 100%;
+
+  .post-btn {
+    font-size: 30px;
+    width: 64px;
+    height: 64px;
+    float: right;
+    margin: 20px 20px 0 20px;
+  }
+}
+
+.steps-content {
+  margin: 40px 0 10px 0;
 }

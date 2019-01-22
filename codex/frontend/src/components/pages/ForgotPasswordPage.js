@@ -2,6 +2,8 @@ import React from 'react'
 import { Layout } from 'antd'
 import ForgotPasswordForm from '../forms/ForgotPasswordForm'
 
+import '../../assets/scss/FormPages.scss'
+
 const { Content } = Layout
 
 const INITIAL_STATE = {
@@ -36,7 +38,7 @@ class SignInPage extends React.Component {
       Math.max(((windowHeight - headerHeight - footerHeight) / 2) +
         headerHeight - (containerHeight / 2), headerHeight + 50))
     const mainHeight = (
-      Math.max(window.innerHeight - headerHeight - footerHeight, containerHeight + 100)
+      Math.max(windowHeight - headerHeight - footerHeight, containerHeight + 100)
     )
 
     // Enable or disable scroll
