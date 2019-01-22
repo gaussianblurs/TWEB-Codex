@@ -5,12 +5,24 @@ import {
   Icon,
   Input,
   Button,
+  Select,
   message
 } from 'antd'
 import * as routes from '../../constants/routes'
 import axios from '../../axios'
 
+const { Option } = Select
+
 class NormalEditProfileForm extends React.Component {
+  fetchTags = (str) => {
+    const { idToken } = this.props
+    axios.get(
+      `/tags/${str}`,
+      { headers: { Authorization: `Bearer: ${idToken}` } }
+    )
+      .then(tags => console.log(tags))
+  }
+
   handleSubmit = (e) => {
     e.preventDefault()
     this.props.form.validateFields((err, values) => {
@@ -50,7 +62,26 @@ class NormalEditProfileForm extends React.Component {
           {getFieldDecorator('nickname', {
             rules: [{ required: true, message: 'Please input a nickname !' }]
           })(
-            <Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder={user.nickname} />
+            <Input
+              prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+              placeholder={user.nickname}
+            />
+          )}
+        </Form.Item>
+        <h2>Subscriptions</h2>
+        <Form.Item
+          help=""
+        >
+          {getFieldDecorator('tags', {
+            rules: [
+              { required: false, type: 'array' }
+            ]
+          })(
+            <Select mode="multiple" placeholder="Select tags" defaultValue={user.tags}>
+              { user.tags.map(tag => (
+                <Option key={tag} value={tag}>{tag}</Option>
+              ))}
+            </Select>
           )}
         </Form.Item>
         <Form.Item>

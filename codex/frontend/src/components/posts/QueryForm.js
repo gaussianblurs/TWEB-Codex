@@ -53,14 +53,13 @@ class QueryForm extends React.Component {
 
     return (
       <Form layout="inline" onSubmit={this.handleSubmit}>
-        <Form.Item
-          label="Target"
-        >
+        <Form.Item>
           {getFieldDecorator('radio-group')(
             <Radio.Group onChange={this.handleRadioChange}>
-              <Radio value="tag">Tag</Radio>
+              <Radio value="title">Tag</Radio>
               <Radio value="description">Description</Radio>
               <Radio value="code">Code</Radio>
+              <Radio value="tag">Tag</Radio>
             </Radio.Group>
           )}
         </Form.Item>
@@ -86,12 +85,11 @@ class QueryForm extends React.Component {
             validateStatus={queryError ? 'error' : ''}
             help=""
             hasFeedback
-            label="Query"
           >
             {getFieldDecorator('query', {
               rules: [{ required: false }]
             })(
-              <Input type="text" placeholder="Type query" className="query-input" />
+              <Input type="text" placeholder="Search" className="query-input" />
             )}
           </Form.Item>
         )}
