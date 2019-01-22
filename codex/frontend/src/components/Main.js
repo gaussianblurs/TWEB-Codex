@@ -12,7 +12,6 @@ import EditProfilePage from './pages/EditProfilePage'
 // import PasswordForget from './pages/PasswordForget'
 
 const Main = (props) => {
-  console.log(props)
   const { user, authUser, idToken } = props
   return (
     <Switch>
@@ -41,7 +40,10 @@ Main.propTypes = {
   }),
   idToken: PropTypes.string,
   user: PropTypes.shape({
-    nickname: PropTypes.string.isRequired
+    nickname: PropTypes.string.isRequired,
+    tags: PropTypes.arrayOf(
+      PropTypes.string.isRequired
+    )
   })
 }
 

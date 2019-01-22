@@ -40,6 +40,9 @@ class NormalSignUpForm extends React.Component {
             uid: firebaseUser.user.uid,
             nickname,
             email
+          },
+          {
+            headers: { Authorization: `Bearer: ${this.props.idToken}` }
           }))
           .then(() => {
             history.push(routes.WALL)

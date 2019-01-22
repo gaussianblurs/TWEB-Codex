@@ -18,9 +18,7 @@ admin.initializeApp({
 // DB init
 firebase.initializeApp(firebaseConfig)
 const db = firebase.firestore()
-db.settings({
-  timestampsInSnapshots: true
-})
+db.settings({})
 
 // Elasticsearch client
 const esclient = new elasticsearch.Client({

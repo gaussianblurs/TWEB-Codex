@@ -143,7 +143,7 @@ MenuHeader.propTypes = {
   }),
   user: PropTypes.shape({
     nickname: PropTypes.string.isRequired,
-    tags: PropTypes.shape(
+    tags: PropTypes.arrayOf(
       PropTypes.string.isRequired
     ).isRequired
   })

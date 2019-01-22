@@ -90,7 +90,7 @@ class EditProfilePage extends React.Component {
               </Button>
             </div>
             <div className="infos">
-              <EditProfileForm />
+              <EditProfileForm user={this.props.user} />
             </div>
           </div>
         </div>
@@ -111,7 +111,7 @@ class EditProfilePage extends React.Component {
             allowFileTypeValidation
             acceptedFileTypes={['image/png', 'image/jpg', 'image/jpeg']}
             allowFileRename
-            fileRenameFunction={file => `${this.props.collaborator._id}${file.extension}`}
+            fileRenameFunction={file => `${this.props.user.nickname}${file.extension}`}
             allowImagePreview
             allowImageEdit
             allowImageCrop
@@ -144,7 +144,7 @@ EditProfilePage.propTypes = {
   }).isRequired,
   user: PropTypes.shape({
     nickname: PropTypes.string.isRequired,
-    tags: PropTypes.shape(
+    tags: PropTypes.arrayOf(
       PropTypes.string.isRequired
     ).isRequired
   }).isRequired

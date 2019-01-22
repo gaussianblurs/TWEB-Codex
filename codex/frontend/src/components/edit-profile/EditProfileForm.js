@@ -19,6 +19,8 @@ class NormalEditProfileForm extends React.Component {
 
   render() {
     const { getFieldDecorator } = this.props.form
+    const { user } = this.props
+
     return (
       <Form onSubmit={this.handleSubmit} className="login-form">
         <h2>Nickname</h2>
@@ -26,7 +28,7 @@ class NormalEditProfileForm extends React.Component {
           {getFieldDecorator('nickname', {
             rules: [{ required: true, message: 'Please input a nickname !' }]
           })(
-            <Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="nickname" />
+            <Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder={user.nickname} />
           )}
         </Form.Item>
         <Form.Item>
@@ -48,6 +50,12 @@ NormalEditProfileForm.propTypes = {
     getFieldError: PropTypes.func.isRequired,
     isFieldTouched: PropTypes.func.isRequired,
     validateFields: PropTypes.func.isRequired
+  }).isRequired,
+  user: PropTypes.shape({
+    nickname: PropTypes.string.isRequired,
+    tags: PropTypes.arrayOf(
+      PropTypes.string.isRequired
+    ).isRequired
   }).isRequired
 }
 
