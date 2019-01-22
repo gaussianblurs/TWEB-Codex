@@ -183,7 +183,7 @@ app.get('/posts/:id', isUserAuthenticated, (req, res, next) => {
 
 
 // Find posts by single field
-app.get('/posts/:field/:value', isUserAuthenticated, (req, res, next) => {
+app.get('/posts/search/:field/:value', isUserAuthenticated, (req, res, next) => {
   const value = decodeURIComponent(req.params.value) // TODO encodeURI frontend
   let searchQuery
   switch (req.params.field) {
@@ -217,10 +217,10 @@ app.get('/posts/:field/:value', isUserAuthenticated, (req, res, next) => {
 })
 
 // default search on all fields
-app.get('/posts', isUserAuthenticated, (req, res, next) => {
+app.get('/posts/search/:query', isUserAuthenticated, (req, res, next) => {
   esclient.search({
     index: 'posts',
-    q: `${req.body.query}`,
+    q: `${req.params.query}`,
     from: 0, // TODO pagination frontend?
     size: 10
   })
