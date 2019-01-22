@@ -176,24 +176,25 @@ app.post('/posts', isUserAuthenticated, (req, res, next) => {
         type: 'tag'
       })
         .then((result) => {
-          const tags = [] // current tags
           // eslint-disable-next-line no-underscore-dangle
-          result.hits.hits.forEach(item => tags.push(item._source.tag))
+          const tags =  result.hits.hits.map(item => item._source.tag)
           pushNewTags(req.body.tags, tags)
         })
         .catch(error => {
           console.error(error)
-          // tags index not set, happens for first post ever 
+          // tags index not set, happens for the first post ever 
           pushNewTags(req.body.tags)
         })
     })
     .catch(next)
 })
 
+/**
+ * Push tags that are not in the DB
+ * @param {*} newTags tags from post
+ * @param {*} storedTags tags from DB
+ */
 function pushNewTags(newTags, storedTags = []) {
-  const tags = [] // current tags
-  // eslint-disable-next-line no-underscore-dangle
-  storedTags.forEach(item => tags.push(item._source.tag))
   newTags.forEach((tag) => {
     if (!storedTags.find(t => t === tag)) {
       esclient.index({
