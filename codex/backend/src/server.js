@@ -183,24 +183,24 @@ app.get('/posts/:id', isUserAuthenticated, (req, res, next) => {
 
 
 // Find posts by single field
-app.get('/posts/search/:field/:value', isUserAuthenticated, (req, res, next) => {
-  const value = decodeURIComponent(req.params.value) // TODO encodeURI frontend
+app.get('/posts/search/:field/:query', isUserAuthenticated, (req, res, next) => {
+  const query = decodeURIComponent(req.params.query) // TODO encodeURI frontend
   let searchQuery
   switch (req.params.field) {
     case 'title':
-      searchQuery = `title:${value}`
+      searchQuery = `title:${query}`
       break
     case 'description':
-      searchQuery = `description:${value}`
+      searchQuery = `description:${query}`
       break
     case 'author':
-      searchQuery = `creator_id:${value}`
+      searchQuery = `creator_id:${query}`
       break
     case 'content':
-      searchQuery = `content:${value}`
+      searchQuery = `content:${query}`
       break
     case 'tag':
-      searchQuery = `tags:${value}`
+      searchQuery = `tags:${query}`
       break
     default:
       res.sendStatus(400)
