@@ -25,7 +25,6 @@ Main.propTypes = {
   }),
   idToken: PropTypes.string,
   user: PropTypes.shape({
-    email: PropTypes.string.isRequired,
     nickname: PropTypes.string.isRequired
   })
 }

@@ -24,7 +24,7 @@ db.settings({
 
 // Elasticsearch client
 const esclient = new elasticsearch.Client({
-  host: 'localhost:9200'
+  host: 'elasticsearch:9200'
 })
 
 // App init
@@ -65,6 +65,7 @@ const isUserAuthenticated = (req, res, next) => {
       .then(userId => db.collection('users').doc(userId).get()
         .then((doc) => {
           res.locals.user = doc.data()
+          res.locals.user.id = doc.id
           next()
         }))
       .catch(() => res.status(401).json({
@@ -133,6 +134,7 @@ app.put('/tags/:tag/unsubscribe', isUserAuthenticated, (req, res, next) => {
  */
 // Create a post
 app.post('/posts', isUserAuthenticated, (req, res, next) => {
+  console.log(`tags: ${JSON.stringify(req.body.tags, null, 0)}`)
   esclient.index({
     index: 'posts',
     type: 'post',
@@ -140,8 +142,8 @@ app.post('/posts', isUserAuthenticated, (req, res, next) => {
       title: req.body.title,
       description: req.body.description,
       tags: req.body.tags,
-      content: req.bodycontent,
-      creator_id: res.locals.user.id, // TODO manage users ?
+      content: req.body.content,
+      creator_id: res.locals.user.id,
       claps: 0,
       creation_time: Date.now()
     }
@@ -151,7 +153,7 @@ app.post('/posts', isUserAuthenticated, (req, res, next) => {
       // add new tags to DB
       esclient.search({
         index: 'tags',
-        type: 'tags'
+        type: 'tag'
       })
         .then((result) => {
           const tags = [] // current tags
@@ -161,7 +163,7 @@ app.post('/posts', isUserAuthenticated, (req, res, next) => {
             if (!tags.find(t => t === tag)) {
               esclient.index({
                 index: 'tags',
-                type: 'tags',
+                type: 'tag',
                 body: {
                   tag
                 }
@@ -169,8 +171,9 @@ app.post('/posts', isUserAuthenticated, (req, res, next) => {
             }
           })
         })
-        .catch(next)
+        .catch(error => console.error(error))
     })
+    .catch(next)
 })
 
 // Find a post by its id
@@ -251,6 +254,20 @@ app.put('/posts', (req, res, next) => {
 })
 
 /**
+ * WALL API
+ */
+// Wall posts
+app.get('/wall', isUserAuthenticated, (req, res, next) => {
+  esclient.search({
+    index: 'posts',
+    type: 'post',
+    q: `tags:${res.locals.user.tags}`
+  })
+    .then(posts => res.send(posts))
+    .catch(next)
+})
+
+/**
  * CLAPS API
  */
 // increment claps to a post
@@ -289,7 +306,7 @@ app.delete('/posts/:id', isUserAuthenticated, (req, res, next) => {
 app.post('/tags/:tag', isUserAuthenticated, (req, res, next) => {
   esclient.index({
     index: 'tags',
-    type: 'tags',
+    type: 'tag',
     body: {
       tag: req.params.tag
     }
@@ -302,7 +319,7 @@ app.post('/tags/:tag', isUserAuthenticated, (req, res, next) => {
 app.get('/tags/', isUserAuthenticated, (req, res, next) => {
   esclient.search({
     index: 'tags',
-    type: 'tags'
+    type: 'tag'
   })
     .then((result) => {
       const tags = []
@@ -317,7 +334,7 @@ app.get('/tags/', isUserAuthenticated, (req, res, next) => {
 app.get('/tags/:tag', isUserAuthenticated, (req, res, next) => {
   esclient.search({
     index: 'tags',
-    type: 'tags',
+    type: 'tag',
     q: `tag:${req.params.tag}*`
   })
     .then((result) => {
@@ -326,28 +343,6 @@ app.get('/tags/:tag', isUserAuthenticated, (req, res, next) => {
       result.hits.hits.forEach(item => tags.push(item._source.tag))
       res.status(200).send(tags)
     })
-    .catch(next)
-})
-
-/**
- * WALL API
- */
-// Wall posts
-app.get('/wall', isUserAuthenticated, (req, res, next) => {
-  esclient.search({
-    index: 'posts',
-    type: 'post',
-    query: {
-      constant_score: {
-        filter: {
-          terms: {
-            tags: res.locals.user.tags
-          }
-        }
-      }
-    }
-  })
-    .then(posts => res.send(posts))
     .catch(next)
 })
 
