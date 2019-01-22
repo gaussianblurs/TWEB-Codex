@@ -28,7 +28,10 @@ const withAuthentication = (Component) => {
     }
 
     fetchUserFromDb = () => axios.get(`/users/${this.state.authUser.uid}`, { headers: { Authorization: `Bearer ${this.state.idToken}` } })
-      .then(response => this.setState({ user: response.data }))
+      .then(response => {
+        console.log(response)
+        this.setState({ user: response.data })
+      })
       .catch((error) => { console.error(error.message) })
 
     render() {

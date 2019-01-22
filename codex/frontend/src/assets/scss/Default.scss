@@ -18,6 +18,11 @@ $footer-height: 90px;
   width: 100%;
 }
 
+.spinner-container {
+  text-align: center;
+  padding-top: calc((100vh - #{$header-height} - #{$footer-height}) / 2 - 15px)
+}
+
 .ant-layout-header {
   background-color: $dark;
 
@@ -33,6 +38,7 @@ $footer-height: 90px;
     font-size: 20px;
     color: $light;
     display: inline-block;
+    cursor: pointer;
 
     .logo-img {
       display: inline;
@@ -59,6 +65,7 @@ $footer-height: 90px;
 
   .menu {
     line-height: $header-height;
+    text-align: center;
   }
 
   ul {
@@ -84,6 +91,10 @@ $footer-height: 90px;
 
 .ant-radio-wrapper {
   margin-right: 20px;
+}
+
+.ant-dropdown-menu {
+  min-width: 200px;
 }
 
 .clearfix {

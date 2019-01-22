@@ -1,15 +1,18 @@
 import React from 'react'
 import { ClipLoader } from 'react-spinners'
+import { Layout } from 'antd'
+
+const { Content } = Layout
 
 const Spinner = () => (
-  <div className="text-center my-3">
+  <Content className="spinner-container">
     <ClipLoader
       sizeUnit="px"
       size={30}
-      color="#7bed9f"
+      color="#091B2C"
       loading
     />
-  </div>
+  </Content>
 )
 
 export default Spinner

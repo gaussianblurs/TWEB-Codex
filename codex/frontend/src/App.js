@@ -21,7 +21,7 @@ const App = () => (
       ({ authUser, user, idToken }) => (
         <BrowserRouter>
           <Layout>
-            <Header authUser={authUser} />
+            <Header authUser={authUser} user={user} />
             <Main authUser={authUser} user={user} idToken={idToken} />
             <Footer />
           </Layout>

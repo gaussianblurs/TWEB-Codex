@@ -1,12 +1,13 @@
 import React from 'react'
-import { Link, withRouter } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import {
   Layout,
   Menu,
   Button,
   Dropdown,
-  Icon
+  Icon,
+  Avatar
 } from 'antd'
 import logo from '../../assets/images/logo.svg'
 import * as routes from '../../constants/routes'
@@ -14,34 +15,8 @@ import { auth } from '../../firebase'
 
 const { Header } = Layout
 
-const AuthNav = () => (
-  <React.Fragment>
-    <Button key="4">Sign out</Button>
-  </React.Fragment>
-)
-
-const NonAuthNav = props => (
-  <React.Fragment>
-    <Menu
-      className="menu"
-      theme="dark"
-      mode="horizontal"
-    >
-      <Menu.Item key="1"><Link to={routes.SIGN_IN}>Sign In</Link></Menu.Item>
-      <Menu.Item key="2"><Link to={routes.SIGN_UP}>Sign Up</Link></Menu.Item>
-      <Menu.Item key="3"><Button type="primary" onClick={auth.doSignOut}>Sign Out</Button></Menu.Item>
-    </Menu>
-  </React.Fragment>
-)
-
-NonAuthNav.propTypes = {
-  location: PropTypes.shape({
-    pathname: PropTypes.string.isRequired
-  }).isRequired
-}
-
 const INITIAL_STATE = {
-  viewportWidth: 0,
+  collapsed: 0,
   menuVisible: false
 }
 
@@ -52,55 +27,108 @@ class MenuHeader extends React.Component {
   }
 
   componentDidMount = () => {
-    this.saveViewportDimensions()
-    window.addEventListener('resize', this.saveViewportDimensions)
+    this.setIsCollapsed()
+    window.addEventListener('resize', this.setIsCollapsed)
   }
 
   componentWillUnmount = () => {
-    window.removeEventListener('resize', this.saveViewportDimensions)
+    window.removeEventListener('resize', this.setIsCollapsed)
   }
 
-  saveViewportDimensions = () => {
+  setIsCollapsed = () => {
     this.setState({
-      viewportWidth: window.innerWidth
+      collapsed: window.innerWidth < 768
     })
   }
 
-  menu = mode => (
+  getUserMenu = () => (
     <React.Fragment>
-      <Menu
-        className="menu"
-        theme="dark"
-        mode={mode}
-      >
-        <Menu.Item key="1"><Link to={routes.SIGN_IN}>Sign In</Link></Menu.Item>
-        <Menu.Item key="2"><Link to={routes.SIGN_UP}>Sign Up</Link></Menu.Item>
-        <Menu.Item key="3"><Button type="primary" onClick={auth.doSignOut}>Sign Out</Button></Menu.Item>
-      </Menu>
+      <Menu.Item>
+        <Link to={routes.PROFILE}>Profile</Link>
+      </Menu.Item>
+      <Menu.Item>
+        <Button type="primary" onClick={auth.doSignOut}>Sign Out</Button>
+      </Menu.Item>
     </React.Fragment>
   )
 
+  getMenu = (collapsed, authUser, user) => (
+    (authUser && user) ?
+      (
+        <Menu
+          theme={collapsed ? 'light' : 'dark'}
+          mode={collapsed ? 'vertical' : 'horizontal'}
+          selectable={false}
+          forceSubMenuRender
+          className="menu"
+        >
+          <Menu.Item>
+            <Link to={routes.WALL}>Wall</Link>
+          </Menu.Item>
+          {collapsed ? (
+            <Menu.SubMenu title="Profile">
+              {this.getUserMenu()}
+            </Menu.SubMenu>
+          ) : (
+            <Menu.Item className="menu">
+              <Dropdown
+                overlay={<Menu>{this.getUserMenu()}</Menu>}
+                trigger={['click']}
+              >
+                <div type="menu">
+                  <Avatar size={35} />
+                </div>
+              </Dropdown>
+            </Menu.Item>
+          )}
+        </Menu>
+      ) : (
+        <Menu
+          theme={collapsed ? 'light' : 'dark'}
+          mode={collapsed ? 'vertical' : 'horizontal'}
+          selectable={false}
+          className="menu"
+        >
+          <Menu.Item>
+            <Link to={routes.SIGN_IN}>Sign In</Link>
+          </Menu.Item>
+          <Menu.Item>
+            <Link to={routes.SIGN_UP}>Sign Up</Link>
+          </Menu.Item>
+        </Menu>
+      )
+  )
+
   render() {
+    const { collapsed } = this.state
+    const { authUser, user } = this.props
+
     return (
       <Header>
-        <div className="logo clearfix noselect">
-          <div className="logo-img">
-            <img src={logo} alt="brand-logo" />
+        <Link to={routes.HOME}>
+          <div className="logo clearfix noselect">
+            <div className="logo-img">
+              <img src={logo} alt="brand-logo" />
+            </div>
+            <div className="logo-txt">
+              CODEX
+            </div>
           </div>
-          <div className="logo-txt">
-            CODEX
-          </div>
-        </div>
-        { this.state.viewportWidth > 768 ?
+        </Link>
+        { collapsed ?
           (
-            this.menu('horizontal')
-          ) : (
-            <Dropdown overlay={this.menu('vertical')} trigger={['click']}>
+            <Dropdown
+              overlay={this.getMenu(collapsed, authUser, user)}
+              trigger={['click']}
+              placement="bottomRight"
+            >
               <Icon
                 className="icon-hamburger"
                 type="menu"
               />
             </Dropdown>
+          ) : (
+            this.getMenu(collapsed, authUser, user)
           )
         }
       </Header>
@@ -110,12 +138,20 @@ class MenuHeader extends React.Component {
 
 MenuHeader.propTypes = {
   authUser: PropTypes.shape({
-    uid: PropTypes.string.isRequired
+    uid: PropTypes.string.isRequired,
+    email: PropTypes.string.isRequired
+  }),
+  user: PropTypes.shape({
+    nickname: PropTypes.string.isRequired,
+    tags: PropTypes.shape(
+      PropTypes.string.isRequired
+    ).isRequired
   })
 }
 
 MenuHeader.defaultProps = {
-  authUser: null
+  authUser: null,
+  user: null
 }
 
 export default MenuHeader

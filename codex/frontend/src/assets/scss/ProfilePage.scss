@@ -1,0 +1,35 @@
+
+.profile {
+  .avatar {
+    @media (min-width: 768px) {
+      float: left;
+    }
+    margin: 15px 30px 0 0;
+
+    .picture {
+      display: block
+    }
+
+    .picture-btn {
+      display: block;
+      width: 100%;
+      margin-top: 20px;
+    }
+  }
+
+  .infos {
+    @media (min-width: 768px) {
+      float: right;
+      width: calc(100% - 150px - 30px);
+    }
+    margin: 15px 0;
+
+    .edit-btn {
+      float: right;
+    }
+
+    .submit-btn {
+      float: right;
+    }
+  }
+}

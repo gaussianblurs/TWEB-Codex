@@ -7,17 +7,33 @@ import WallPage from './pages/WallPage'
 import SignUpPage from './pages/SignUpPage'
 import SignInPage from './pages/SignInPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
+import ProfilePage from './pages/ProfilePage'
+import EditProfilePage from './pages/EditProfilePage'
 // import PasswordForget from './pages/PasswordForget'
 
-const Main = props => (
-  <Switch>
-    <Route exact path={routes.HOME} component={HomePage} />
-    <Route exact path={routes.WALL} component={WallPage} />
-    <Route exact path={routes.SIGN_UP} component={SignUpPage} />
-    <Route exact path={routes.SIGN_IN} component={SignInPage} />
-    <Route exact path={routes.FORGOT_PASSWORD} component={ForgotPasswordPage} />
-  </Switch>
-)
+const Main = (props) => {
+  console.log(props)
+  const { user, authUser, idToken } = props
+  return (
+    <Switch>
+      <Route exact path={routes.HOME} component={HomePage} />
+      <Route exact path={routes.WALL} component={WallPage} />
+      <Route
+        exact
+        path={routes.PROFILE}
+        render={() => <ProfilePage user={user} authUser={authUser} idToken={idToken} />}
+      />
+      <Route
+        exact
+        path={routes.EDIT_PROFILE}
+        render={() => <EditProfilePage user={user} authUser={authUser} idToken={idToken} />}
+      />
+      <Route exact path={routes.SIGN_UP} component={SignUpPage} />
+      <Route exact path={routes.SIGN_IN} component={SignInPage} />
+      <Route exact path={routes.FORGOT_PASSWORD} component={ForgotPasswordPage} />
+    </Switch>
+  )
+}
 
 Main.propTypes = {
   authUser: PropTypes.shape({
@@ -25,7 +41,6 @@ Main.propTypes = {
   }),
   idToken: PropTypes.string,
   user: PropTypes.shape({
-    email: PropTypes.string.isRequired,
     nickname: PropTypes.string.isRequired
   })
 }

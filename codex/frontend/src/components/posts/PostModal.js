@@ -1,12 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Modal, Steps, Button, Input, message } from 'antd'
+import PostModalForm from './PostModalForm'
 
 const { Step } = Steps
-const { TextArea } = Input
 
 const INITIAL_STATE = {
-  current: 0
+  current: 0,
+  post: false
 }
 
 class PostModal extends React.Component {
@@ -28,8 +29,19 @@ class PostModal extends React.Component {
   }
 
   handleDone = () => {
+    // Will trigger post from child component PostModalForm
+    this.setState({
+      post: true
+    })
+  }
+
+  handlePost = () => {
     message.success('Post successfully sent!')
     this.props.setModalVisible(false)
+    this.setState({
+      post: false,
+      current: 0
+    })
   }
 
   footer = () => {
@@ -56,6 +68,11 @@ class PostModal extends React.Component {
     )
   }
 
+  formContent = () => {
+    const { current, post } = this.state
+    return (<PostModalForm post={post} step={current} handlePost={this.handlePost} />)
+  }
+
   render() {
     const { current } = this.state
     const { modalVisible } = this.props
@@ -76,10 +93,7 @@ class PostModal extends React.Component {
           <Step title="Code" />
         </Steps>
         <div className="steps-content">
-          <h3>Description</h3>
-          <TextArea autosize={{ minRows: 4, maxRows: 20 }} />
-          <h3>Code</h3>
-          <TextArea autosize={{ minRows: 4, maxRows: 20 }} />
+          { this.formContent() }
         </div>
       </Modal>
     )
@@ -88,7 +102,7 @@ class PostModal extends React.Component {
 
 PostModal.propTypes = {
   setModalVisible: PropTypes.func.isRequired,
-  modalVisible: PropTypes.number.isRequired
+  modalVisible: PropTypes.bool.isRequired
 }
 
 export default PostModal
