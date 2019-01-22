@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Layout, Avatar, Button } from 'antd'
+import { Layout, Avatar, Button, message } from 'antd'
+import Spinner from '../utils/Spinner'
 import * as routes from '../../constants/routes'
 import axios from '../../axios'
 import withAuthorization from '../withAuthorization'
@@ -9,7 +10,10 @@ import '../../assets/scss/ProfilePage.scss'
 
 const { Content } = Layout
 
-const INITIAL_STATE = {}
+const INITIAL_STATE = {
+  hasLoaded: false,
+  user: null
+}
 
 class ProfilePage extends React.Component {
   constructor(props) {
@@ -21,6 +25,11 @@ class ProfilePage extends React.Component {
     axios.get(`/users/${this.props.authUser.uid}`, {
       headers: { Authorization: `Bearer: ${this.props.idToken}` }
     })
+      .then(response => this.setState({
+        user: response.data,
+        hasLoaded: true
+      }))
+      .catch(error => message.error(error))
   }
 
   handleClick = () => {
@@ -28,34 +37,38 @@ class ProfilePage extends React.Component {
   }
 
   render() {
-    const { user, authUser } = this.props
+    const { authUser } = this.props
+    const { hasLoaded, user } = this.state
 
-    return (
-      <Content>
-        <div className="main-container profile">
-          <div>
-            <h2>Profile</h2>
-            <hr />
-          </div>
-          <div className="clearfix">
-            <Avatar size={150} icon="user" className="avatar" />
-            <div className="infos">
-              <h2>Nickname</h2>
-              <p>{user.nickname}</p>
-              <h2>E-mail</h2>
-              <p>{authUser.email}</p>
-              <div className="clearfix">
-                <Button onClick={this.handleClick} type="primary" className="edit-btn"> Edit Profile</Button>
+    if (hasLoaded) {
+      return (
+        <Content>
+          <div className="main-container profile">
+            <div>
+              <h2>Profile</h2>
+              <hr />
+            </div>
+            <div className="clearfix">
+              <Avatar size={150} icon="user" className="avatar" />
+              <div className="infos">
+                <h2>Nickname</h2>
+                <p>{user.nickname}</p>
+                <h2>E-mail</h2>
+                <p>{authUser.email}</p>
+                <div className="clearfix">
+                  <Button onClick={this.handleClick} type="primary" className="edit-btn"> Edit Profile</Button>
+                </div>
               </div>
             </div>
+            <div>
+              <h2>Posts</h2>
+              <hr />
+            </div>
           </div>
-          <div>
-            <h2>Posts</h2>
-            <hr />
-          </div>
-        </div>
-      </Content>
-    )
+        </Content>
+      )
+    }
+    return <Spinner />
   }
 }
 

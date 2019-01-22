@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { withRouter } from 'react-router-dom'
 import {
   Form,
   Icon,
@@ -87,4 +88,4 @@ NormalEditProfileForm.propTypes = {
 
 const WrappedEditProfileForm = Form.create({ name: 'edit_profile' })(NormalEditProfileForm)
 
-export default WrappedEditProfileForm
+export default withRouter(WrappedEditProfileForm)
