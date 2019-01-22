@@ -153,7 +153,8 @@ app.post('/posts', isUserAuthenticated, (req, res, next) => {
       })
         .then((result) => {
           const tags = [] // current tags
-          result.hits.hits.forEach(item => tags.push(item._source.tag)) // eslint-disable-line no-underscore-dangle
+          // eslint-disable-next-line no-underscore-dangle
+          result.hits.hits.forEach(item => tags.push(item._source.tag))
           req.body.tags.forEach((tag) => {
             if (!tags.find(t => t === tag)) {
               esclient.index({
@@ -251,8 +252,8 @@ app.put('/posts', (req, res, next) => {
  * CLAPS API
  */
 // increment claps to a post
-app.put('/posts/:id/update-claps', (req, res, next) => {            // TODO prevent from direct access?
-   esclient.update({
+app.put('/posts/:id/update-claps', isUserAuthenticated, (req, res, next) => { // TODO prevent from direct access?
+  esclient.update({
     index: 'posts',
     type: 'post',
     id: req.params.id,
@@ -262,7 +263,7 @@ app.put('/posts/:id/update-claps', (req, res, next) => {            // TODO prev
         counter: 1
       }
     },
-    retryOnConflict : 5
+    retryOnConflict: 5
   })
     .then(() => res.status(200).send('OK'))
     .catch(next)
@@ -283,12 +284,12 @@ app.delete('/posts/:id', isUserAuthenticated, (req, res, next) => {
  * TAGS API
  */
 // add tag to index of all tags
-app.post('/tags/:tag', (req, res, next) => {
+app.post('/tags/:tag', isUserAuthenticated, (req, res, next) => {
   esclient.index({
     index: 'tags',
     type: 'tags',
     body: {
-      tag: req.params.tag,
+      tag: req.params.tag
     }
   })
     .then(() => res.sendStatus(201))
@@ -296,29 +297,31 @@ app.post('/tags/:tag', (req, res, next) => {
 })
 
 // get all tags
-app.get('/tags/', (req, res, next) => {
+app.get('/tags/', isUserAuthenticated, (req, res, next) => {
   esclient.search({
     index: 'tags',
     type: 'tags'
   })
-    .then(result => {
-      let tags = [];
-      result.hits.hits.forEach(item => tags.push(item._source.tag));
+    .then((result) => {
+      const tags = []
+      // eslint-disable-next-line no-underscore-dangle
+      result.hits.hits.forEach(item => tags.push(item._source.tag))
       res.status(200).send(tags)
     })
     .catch(next)
 })
 
 // get tags like param
-app.get('/tags/:tag', (req, res, next) => {
+app.get('/tags/:tag', isUserAuthenticated, (req, res, next) => {
   esclient.search({
     index: 'tags',
     type: 'tags',
     q: `tag:${req.params.tag}*`
   })
-    .then(result => {
-      let tags = [];
-      result.hits.hits.forEach(item => tags.push(item._source.tag));
+    .then((result) => {
+      const tags = []
+      // eslint-disable-next-line no-underscore-dangle
+      result.hits.hits.forEach(item => tags.push(item._source.tag))
       res.status(200).send(tags)
     })
     .catch(next)
