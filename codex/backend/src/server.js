@@ -78,7 +78,7 @@ const isUserAuthenticated = (req, res, next) => {
   })
 }
 
-// Users API
+// USERS API
 // Create a user
 app.post('/users', isUserAuthenticated, (req, res, next) => {
   db.collection('users').doc(res.locals.user.id).set({
@@ -128,7 +128,9 @@ app.put('/tags/:tag/unsubscribe', isUserAuthenticated, (req, res, next) => {
     .catch(next)
 })
 
-// Posts API
+/**
+ * POSTS API
+ */
 // Create a post
 app.post('/posts', isUserAuthenticated, (req, res, next) => {
   esclient.index({
@@ -324,6 +326,21 @@ app.get('/tags/:tag', isUserAuthenticated, (req, res, next) => {
       result.hits.hits.forEach(item => tags.push(item._source.tag))
       res.status(200).send(tags)
     })
+    .catch(next)
+})
+
+/**
+ * WALL API
+ */
+
+// Wall posts
+app.get('/wall', isUserAuthenticated, (req, res, next) => {
+  esclient.search({
+    index: 'posts',
+    type: 'post',
+    q: `tags:${res.locals.user.tags}`
+  })
+    .then(posts => res.send(posts))
     .catch(next)
 })
 
