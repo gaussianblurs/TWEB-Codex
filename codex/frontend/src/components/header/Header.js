@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link, withRouter } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import {
   Layout,
@@ -20,7 +20,7 @@ const AuthNav = () => (
   </React.Fragment>
 )
 
-const NonAuthNav = props => (
+const NonAuthNav = () => (
   <Menu
     className="menu"
     theme="dark"
