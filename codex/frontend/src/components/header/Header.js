@@ -41,17 +41,6 @@ class MenuHeader extends React.Component {
     })
   }
 
-  getUserMenu = () => (
-    <React.Fragment>
-      <Menu.Item>
-        <Link to={routes.PROFILE}>Profile</Link>
-      </Menu.Item>
-      <Menu.Item>
-        <Button type="primary" onClick={auth.doSignOut}>Sign Out</Button>
-      </Menu.Item>
-    </React.Fragment>
-  )
-
   getMenu = (collapsed, authUser, user) => (
     (authUser && user) ?
       (
@@ -59,28 +48,21 @@ class MenuHeader extends React.Component {
           theme={collapsed ? 'light' : 'dark'}
           mode={collapsed ? 'vertical' : 'horizontal'}
           selectable={false}
-          forceSubMenuRender
           className="menu"
         >
           <Menu.Item>
             <Link to={routes.WALL}>Wall</Link>
           </Menu.Item>
-          {collapsed ? (
-            <Menu.SubMenu title="Profile">
-              {this.getUserMenu()}
-            </Menu.SubMenu>
-          ) : (
-            <Menu.Item className="menu">
-              <Dropdown
-                overlay={<Menu>{this.getUserMenu()}</Menu>}
-                trigger={['click']}
-              >
-                <div type="menu">
-                  <Avatar size={35} />
-                </div>
-              </Dropdown>
+          <Menu.SubMenu
+            title={collapsed ? 'Profile' : (<div type="menu"><Avatar size={35} /></div>)}
+          >
+            <Menu.Item>
+              <Link to={routes.PROFILE}>Profile</Link>
             </Menu.Item>
-          )}
+            <Menu.Item>
+              <Button type="primary" onClick={auth.doSignOut} style={{ width: '100%' }}>Sign Out</Button>
+            </Menu.Item>
+          </Menu.SubMenu>
         </Menu>
       ) : (
         <Menu
