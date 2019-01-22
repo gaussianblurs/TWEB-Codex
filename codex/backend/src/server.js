@@ -77,7 +77,9 @@ const isUserAuthenticated = (req, res, next) => {
   })
 }
 
-// USERS API
+/**
+ * USERS API
+ */
 // Create a user
 app.post('/users', isUserAuthenticated, (req, res, next) => {
   db.collection('users').doc(res.locals.user.id).set({
@@ -100,6 +102,25 @@ app.get('/users/:id', isUserAuthenticated, (req, res, next) => {
         next(error)
       }
     })
+})
+
+// Update user
+app.put('/users', isUserAuthenticated, (req, res, next) => {
+  db.collection('users').doc(res.locals.user.id).update({
+    nickname: req.body.nickname,
+    tags: req.body.tags
+  })
+    .then(() => res.sendStatus(200))
+    .catch(next)
+})
+
+// Upload avatar
+app.put('/users/avatar', isUserAuthenticated, (req, res, next) => {
+  db.collection('users').doc(res.locals.user.id).update({
+    avatar: req.body.avatar
+  })
+    .then(() => res.sendStatus(200))
+    .catch(next)
 })
 
 // Check if username exists
@@ -132,7 +153,6 @@ app.put('/tags/:tag/unsubscribe', isUserAuthenticated, (req, res, next) => {
  */
 // Create a post
 app.post('/posts', isUserAuthenticated, (req, res, next) => {
-  console.log(`tags: ${JSON.stringify(req.body.tags, null, 0)}`)
   esclient.index({
     index: 'posts',
     type: 'post',
@@ -314,7 +334,7 @@ app.post('/tags/:tag', isUserAuthenticated, (req, res, next) => {
 })
 
 // get all tags
-app.get('/tags/', isUserAuthenticated, (req, res, next) => {
+app.get('/tags', isUserAuthenticated, (req, res, next) => {
   esclient.search({
     index: 'tags',
     type: 'tag'
