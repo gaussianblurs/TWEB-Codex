@@ -24,7 +24,7 @@ db.settings({
 
 // Elasticsearch client
 const esclient = new elasticsearch.Client({
-  host: 'localhost:9200'
+  host: 'elasticsearch:9200'
 })
 
 // App init
@@ -62,10 +62,10 @@ const isUserAuthenticated = (req, res, next) => {
   const token = getBearerToken(authHeader)
   if (token) {
     return verifyTokenAndGetUID(token)
-      // TODO: Find user in elasticsearch
       .then(userId => db.collection('users').doc(userId).get()
         .then((doc) => {
           res.locals.user = doc.data()
+          res.locals.user.id = doc.id
           next()
         }))
       .catch(() => res.status(401).json({
@@ -79,15 +79,18 @@ const isUserAuthenticated = (req, res, next) => {
   })
 }
 
-app.post('/users', (req, res, next) => {
-  db.collection('users').doc(req.body.uid).set({
+// USERS API
+// Create a user
+app.post('/users', isUserAuthenticated, (req, res, next) => {
+  db.collection('users').doc(res.locals.user.id).set({
     nickname: req.body.nickname,
-    email: req.body.email
+    tags: []
   })
     .then(() => res.sendStatus(201))
     .catch(next)
 })
 
+// Get a single user by its id
 app.get('/users/:id', isUserAuthenticated, (req, res, next) => {
   db.collection('users').doc(req.params.id).get()
     .then((doc) => {
@@ -101,9 +104,37 @@ app.get('/users/:id', isUserAuthenticated, (req, res, next) => {
     })
 })
 
-// Posts API
+// Check if username exists
+app.get('/users/nickname/:nickname', (req, res, next) => {
+  db.collection('users').where('nickname', '==', req.params.nickname).get()
+    .then(snapshot => res.send(!snapshot.empty))
+    .catch(next)
+})
+
+// User subscribtion to a tag
+app.put('/tags/:tag/subscribe', isUserAuthenticated, (req, res, next) => {
+  db.collection('users').doc(res.locals.user.id).update({
+    tags: admin.firestore.FieldValue.arrayUnion(req.params.tag)
+  })
+    .then(() => res.sendStatus(200))
+    .catch(next)
+})
+
+// User unsubscription to a tag
+app.put('/tags/:tag/unsubscribe', isUserAuthenticated, (req, res, next) => {
+  db.collection('users').doc(res.locals.user.id).update({
+    tags: admin.firestore.FieldValue.arrayRemove(req.params.tag)
+  })
+    .then(() => res.sendStatus(200))
+    .catch(next)
+})
+
+/**
+ * POSTS API
+ */
 // Create a post
-app.put('/posts', (req, res, next) => {
+app.post('/posts', isUserAuthenticated, (req, res, next) => {
+  console.log(`tags: ${JSON.stringify(req.body.tags, null, 0)}`)
   esclient.index({
     index: 'posts',
     type: 'post',
@@ -111,62 +142,90 @@ app.put('/posts', (req, res, next) => {
       title: req.body.title,
       description: req.body.description,
       tags: req.body.tags,
-      content: req.bodycontent,
-      creator_id: req.body.user_id,                       // TODO manage users ?
+      content: req.body.content,
+      creator_id: res.locals.user.id,
       claps: 0,
       creation_time: Date.now()
     }
   })
-    .then(() => res.sendStatus(201))
+    .then(() => {
+      res.sendStatus(201)
+      // add new tags to DB
+      esclient.search({
+        index: 'tags',
+        type: 'tag'
+      })
+        .then((result) => {
+          const tags = [] // current tags
+          // eslint-disable-next-line no-underscore-dangle
+          result.hits.hits.forEach(item => tags.push(item._source.tag))
+          req.body.tags.forEach((tag) => {
+            if (!tags.find(t => t === tag)) {
+              esclient.index({
+                index: 'tags',
+                type: 'tag',
+                body: {
+                  tag
+                }
+              })
+            }
+          })
+        })
+        .catch(error => console.error(error))
+    })
     .catch(next)
 })
 
 // Find a post by its id
-app.get('/posts/:id', (req, res, next) => {
+app.get('/posts/:id', isUserAuthenticated, (req, res, next) => {
   esclient.search({
     index: 'posts',
     q: `_id:${req.params.id}`
   })
-    .then(post => res.send(JSON.stringify(post, null, 2)))
+    .then(post => res.send(post))
     .catch(next)
 })
 
 
 // Find posts by single field
-app.get('/posts/:field/:value', (req, res, next) => {
-  const value = decodeURIComponent(req.params.value)          // TODO encodeURI frontend
+app.get('/posts/search/:field/:query', isUserAuthenticated, (req, res, next) => {
+  const query = decodeURIComponent(req.params.query) // TODO encodeURI frontend
   let searchQuery
   switch (req.params.field) {
     case 'title':
-      searchQuery = `title:${value}`
+      searchQuery = `title:${query}`
       break
     case 'description':
-      searchQuery = `description:${value}`
+      searchQuery = `description:${query}`
       break
     case 'author':
-      searchQuery = `creator_id:${value}`
+      searchQuery = `creator_id:${query}`
+      break
+    case 'content':
+      searchQuery = `content:${query}`
       break
     case 'tag':
-      searchQuery = `tags:${value}`
+      searchQuery = `tags:${query}`
       break
     default:
-      break
+      res.sendStatus(400)
+      return
   }
   esclient.search({
     index: 'posts',
     q: searchQuery,
-    from: 0,                                                  // TODO pagination, score? split?
-    size: 10
+    from: req.query.offset,
+    size: req.query.pagesize
   })
-  .then(post => res.send(JSON.stringify(post, null, 2)))
+    .then(posts => res.send(posts))
     .catch(next)
 })
 
 // default search on all fields
-app.get('/posts/', (req, res, next) => {
+app.get('/posts/search/:query', isUserAuthenticated, (req, res, next) => {
   esclient.search({
     index: 'posts',
-    q: `author:${req.body.query}`, // TODO multi search
+    q: `${req.params.query}`,
     from: 0, // TODO pagination frontend?
     size: 10
   })
@@ -174,34 +233,116 @@ app.get('/posts/', (req, res, next) => {
     .catch(next)
 })
 
-/* TODO
 // Update
+// id and creator_id cannot be modified
 app.put('/posts', (req, res, next) => {
   esclient.update({
     index: 'posts',
+    type: 'post',
     id: req.body.id,
     body: {
       doc: {
         title: req.body.title,
         description: req.body.description,
         tags: req.body.tags,
-        content: req.bodycontent,
-        creator_id: req.body.user_id
+        content: req.body.content
       }
     }
   })
     .then(() => res.sendStatus(200))
     .catch(next)
 })
-*/
+
+/**
+ * WALL API
+ */
+// Wall posts
+app.get('/wall', isUserAuthenticated, (req, res, next) => {
+  esclient.search({
+    index: 'posts',
+    type: 'post',
+    q: `tags:${res.locals.user.tags}`
+  })
+    .then(posts => res.send(posts))
+    .catch(next)
+})
+
+/**
+ * CLAPS API
+ */
+// increment claps to a post
+app.put('/posts/:id/update-claps', isUserAuthenticated, (req, res, next) => { // TODO prevent from direct access?
+  esclient.update({
+    index: 'posts',
+    type: 'post',
+    id: req.params.id,
+    body: {
+      script: 'ctx._source.claps += 1',
+      upsert: {
+        counter: 1
+      }
+    },
+    retryOnConflict: 5
+  })
+    .then(() => res.status(200).send('OK'))
+    .catch(next)
+})
 
 // Delete
-app.delete('/posts/:id', (req, res, next) => {
+app.delete('/posts/:id', isUserAuthenticated, (req, res, next) => {
   esclient.delete({
     index: 'posts',
-    _id: req.params.id
+    type: 'post',
+    id: req.params.id
   })
     .then(() => res.sendStatus(200))
+    .catch(next)
+})
+
+/**
+ * TAGS API
+ */
+// add tag to index of all tags
+app.post('/tags/:tag', isUserAuthenticated, (req, res, next) => {
+  esclient.index({
+    index: 'tags',
+    type: 'tag',
+    body: {
+      tag: req.params.tag
+    }
+  })
+    .then(() => res.sendStatus(201))
+    .catch(next)
+})
+
+// get all tags
+app.get('/tags/', isUserAuthenticated, (req, res, next) => {
+  esclient.search({
+    index: 'tags',
+    type: 'tag'
+  })
+    .then((result) => {
+      const tags = []
+      // eslint-disable-next-line no-underscore-dangle
+      result.hits.hits.forEach(item => tags.push(item._source.tag))
+      res.status(200).send(tags)
+    })
+    .catch(next)
+})
+
+// get tags like param
+app.get('/tags/:tag', isUserAuthenticated, (req, res, next) => {
+  esclient.search({
+    index: 'tags',
+    type: 'tag',
+    q: `tag:${req.params.tag}*`
+  })
+    .then((result) => {
+      const tags = []
+      // eslint-disable-next-line no-underscore-dangle
+      result.hits.hits.forEach(item => tags.push(item._source.tag))
+      res.status(200).send(tags)
+    })
     .catch(next)
 })
 
