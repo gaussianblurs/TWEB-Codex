@@ -11,6 +11,7 @@ import FilePondPluginImageResize from 'filepond-plugin-image-resize'
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview'
 import FilePondPluginImageCrop from 'filepond-plugin-image-crop'
 import EditProfileForm from '../edit-profile/EditProfileForm'
+import withAuthorization from '../withAuthorization'
 
 import '../../assets/scss/ProfilePage.scss'
 import 'filepond/dist/filepond.min.css'
@@ -90,7 +91,7 @@ class EditProfilePage extends React.Component {
               </Button>
             </div>
             <div className="infos">
-              <EditProfileForm user={this.props.user} />
+              <EditProfileForm user={this.props.user} idToken={this.props.idToken} />
             </div>
           </div>
         </div>
@@ -147,7 +148,10 @@ EditProfilePage.propTypes = {
     tags: PropTypes.arrayOf(
       PropTypes.string.isRequired
     ).isRequired
-  }).isRequired
+  }).isRequired,
+  idToken: PropTypes.string.isRequired
 }
 
-export default EditProfilePage
+const authCondition = authUser => !!authUser
+
+export default withAuthorization(authCondition)(EditProfilePage)
