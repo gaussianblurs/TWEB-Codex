@@ -35,25 +35,33 @@ class NormalSignUpForm extends React.Component {
           history
         } = this.props
 
-        auth.doCreateUserWithEmailAndPassword(email, password)
-          .then(firebaseUser => firebaseUser.user)
-          .then(authUser => authUser.getIdToken()
-            .then(idToken => axios.post('/users', {
-              uid: authUser.uid,
-              nickname,
-              email
-            },
-            {
-              headers: { Authorization: `Bearer: ${idToken}` }
-            }))
-            .then(() => {
-              history.push(routes.WALL)
-            })
-            .catch((error) => {
-              message.error(error.message)
-            }))
-          .catch((error) => {
-            message.error(error.message)
+        axios.get(`/users/nickname/${nickname}`)
+          .then(response => response.data)
+          .then((userExists) => {
+            if (userExists) {
+              message.error('Nickname is already taken !')
+            } else {
+              auth.doCreateUserWithEmailAndPassword(email, password)
+                .then(firebaseUser => firebaseUser.user)
+                .then(authUser => authUser.getIdToken()
+                  .then(idToken => axios.post('/users', {
+                    uid: authUser.uid,
+                    nickname,
+                    email
+                  },
+                  {
+                    headers: { Authorization: `Bearer: ${idToken}` }
+                  }))
+                  .then(() => {
+                    history.push(routes.WALL)
+                  })
+                  .catch((error) => {
+                    message.error(error.message)
+                  }))
+                .catch((error) => {
+                  message.error(error.message)
+                })
+            }
           })
       }
     })
