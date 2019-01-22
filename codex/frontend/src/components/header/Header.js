@@ -8,17 +8,20 @@ import {
   Dropdown,
   Icon,
   Avatar,
-  Popover
+  Popover,
+  message
 } from 'antd'
 import logo from '../../assets/images/logo.svg'
 import * as routes from '../../constants/routes'
-import { auth } from '../../firebase'
+import { auth, firebaseAuth } from '../../firebase'
+import axios from '../../axios'
 
 const { Header } = Layout
 
 const INITIAL_STATE = {
   collapsed: 0,
-  menuVisible: false
+  menuVisible: false,
+  user: null
 }
 
 class MenuHeader extends React.Component {
@@ -30,6 +33,18 @@ class MenuHeader extends React.Component {
   componentDidMount = () => {
     this.setIsCollapsed()
     window.addEventListener('resize', this.setIsCollapsed)
+    firebaseAuth.onAuthStateChanged((authUser) => {
+      if (authUser) {
+        authUser.getIdToken()
+          .then(idToken => axios.get(`/users/${authUser.uid}`, {
+            headers: { Authorization: `Bearer: ${idToken}` }
+          })
+            .then(response => this.setState({
+              user: response.data
+            }))
+            .catch(error => message.error(error)))
+      }
+    })
   }
 
   componentWillUnmount = () => {
@@ -97,8 +112,8 @@ class MenuHeader extends React.Component {
   )
 
   render() {
-    const { collapsed } = this.state
-    const { authUser, user } = this.props
+    const { collapsed, user } = this.state
+    const { authUser } = this.props
 
     return (
       <Header>
@@ -137,18 +152,11 @@ MenuHeader.propTypes = {
   authUser: PropTypes.shape({
     uid: PropTypes.string.isRequired,
     email: PropTypes.string.isRequired
-  }),
-  user: PropTypes.shape({
-    nickname: PropTypes.string.isRequired,
-    tags: PropTypes.arrayOf(
-      PropTypes.string.isRequired
-    ).isRequired
   })
 }
 
 MenuHeader.defaultProps = {
-  authUser: null,
-  user: null
+  authUser: null
 }
 
 export default MenuHeader

@@ -12,7 +12,7 @@ import EditProfilePage from './pages/EditProfilePage'
 // import PasswordForget from './pages/PasswordForget'
 
 const Main = (props) => {
-  const { user, authUser, idToken } = props
+  const { authUser, idToken } = props
   return (
     <Switch>
       <Route exact path={routes.HOME} component={HomePage} />
@@ -20,12 +20,12 @@ const Main = (props) => {
       <Route
         exact
         path={routes.PROFILE}
-        render={() => <ProfilePage user={user} authUser={authUser} idToken={idToken} />}
+        render={() => <ProfilePage authUser={authUser} idToken={idToken} />}
       />
       <Route
         exact
         path={routes.EDIT_PROFILE}
-        render={() => <EditProfilePage user={user} authUser={authUser} idToken={idToken} />}
+        render={() => <EditProfilePage authUser={authUser} idToken={idToken} />}
       />
       <Route exact path={routes.SIGN_UP} component={SignUpPage} />
       <Route exact path={routes.SIGN_IN} component={SignInPage} />
@@ -38,19 +38,12 @@ Main.propTypes = {
   authUser: PropTypes.shape({
     uid: PropTypes.string.isRequired
   }),
-  idToken: PropTypes.string,
-  user: PropTypes.shape({
-    nickname: PropTypes.string.isRequired,
-    tags: PropTypes.arrayOf(
-      PropTypes.string.isRequired
-    )
-  })
+  idToken: PropTypes.string
 }
 
 Main.defaultProps = {
   authUser: null,
-  idToken: null,
-  user: null
+  idToken: null
 }
 
 export default Main

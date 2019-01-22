@@ -11,7 +11,7 @@ const INITIAL_STATE = {
   mainHeight: ''
 }
 
-class SignInPage extends React.Component {
+class ForgotPasswordPage extends React.Component {
   constructor(props) {
     super(props)
     this.state = { ...INITIAL_STATE }
@@ -72,4 +72,4 @@ class SignInPage extends React.Component {
   }
 }
 
-export default SignInPage
+export default ForgotPasswordPage
