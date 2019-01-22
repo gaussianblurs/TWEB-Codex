@@ -144,8 +144,30 @@ app.post('/posts', isUserAuthenticated, (req, res, next) => {
       creation_time: Date.now()
     }
   })
-    .then(() => res.sendStatus(201))
-    .catch(next)
+    .then(() => {
+      res.sendStatus(201)
+      // add new tags to DB
+      esclient.search({
+        index: 'tags',
+        type: 'tags'
+      })
+        .then((result) => {
+          const tags = [] // current tags
+          result.hits.hits.forEach(item => tags.push(item._source.tag)) // eslint-disable-line no-underscore-dangle
+          req.body.tags.forEach((tag) => {
+            if (!tags.find(t => t === tag)) {
+              esclient.index({
+                index: 'tags',
+                type: 'tags',
+                body: {
+                  tag
+                }
+              })
+            }
+          })
+        })
+        .catch(next)
+    })
 })
 
 // Find a post by its id
@@ -186,8 +208,8 @@ app.get('/posts/:field/:value', isUserAuthenticated, (req, res, next) => {
   esclient.search({
     index: 'posts',
     q: searchQuery,
-    from: 0, // TODO pagination, score? split?
-    size: 10
+    from: req.query.offset,
+    size: req.query.pagesize
   })
     .then(posts => res.send(posts))
     .catch(next)
@@ -205,34 +227,100 @@ app.get('/posts', isUserAuthenticated, (req, res, next) => {
     .catch(next)
 })
 
-/* TODO
 // Update
+// id and creator_id cannot be modified
 app.put('/posts', (req, res, next) => {
   esclient.update({
     index: 'posts',
+    type: 'post',
     id: req.body.id,
     body: {
       doc: {
         title: req.body.title,
         description: req.body.description,
         tags: req.body.tags,
-        content: req.bodycontent,
-        creator_id: req.body.user_id
+        content: req.body.content
       }
     }
   })
     .then(() => res.sendStatus(200))
     .catch(next)
 })
-*/
+
+/**
+ * CLAPS API
+ */
+// increment claps to a post
+app.put('/posts/:id/update-claps', (req, res, next) => {            // TODO prevent from direct access?
+   esclient.update({
+    index: 'posts',
+    type: 'post',
+    id: req.params.id,
+    body: {
+      script: 'ctx._source.claps += 1',
+      upsert: {
+        counter: 1
+      }
+    },
+    retryOnConflict : 5
+  })
+    .then(() => res.status(200).send('OK'))
+    .catch(next)
+})
 
 // Delete
 app.delete('/posts/:id', isUserAuthenticated, (req, res, next) => {
   esclient.delete({
     index: 'posts',
-    _id: req.params.id
+    type: 'post',
+    id: req.params.id
   })
     .then(() => res.sendStatus(200))
+    .catch(next)
+})
+
+/**
+ * TAGS API
+ */
+// add tag to index of all tags
+app.post('/tags/:tag', (req, res, next) => {
+  esclient.index({
+    index: 'tags',
+    type: 'tags',
+    body: {
+      tag: req.params.tag,
+    }
+  })
+    .then(() => res.sendStatus(201))
+    .catch(next)
+})
+
+// get all tags
+app.get('/tags/', (req, res, next) => {
+  esclient.search({
+    index: 'tags',
+    type: 'tags'
+  })
+    .then(result => {
+      let tags = [];
+      result.hits.hits.forEach(item => tags.push(item._source.tag));
+      res.status(200).send(tags)
+    })
+    .catch(next)
+})
+
+// get tags like param
+app.get('/tags/:tag', (req, res, next) => {
+  esclient.search({
+    index: 'tags',
+    type: 'tags',
+    q: `tag:${req.params.tag}*`
+  })
+    .then(result => {
+      let tags = [];
+      result.hits.hits.forEach(item => tags.push(item._source.tag));
+      res.status(200).send(tags)
+    })
     .catch(next)
 })
 
