@@ -1,9 +1,10 @@
 import React from 'react'
-import { withRouter } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import { Layout, Avatar, Button } from 'antd'
-
 import * as routes from '../../constants/routes'
+import axios from '../../axios'
+import withAuthorization from '../withAuthorization'
+
 import '../../assets/scss/ProfilePage.scss'
 
 const { Content } = Layout
@@ -14,6 +15,12 @@ class ProfilePage extends React.Component {
   constructor(props) {
     super(props)
     this.state = { ...INITIAL_STATE }
+  }
+
+  componentDidMount = () => {
+    axios.get(`/users/${this.props.authUser.uid}`, {
+      headers: { Authorization: `Bearer: ${this.props.idToken}` }
+    })
   }
 
   handleClick = () => {
@@ -65,7 +72,10 @@ ProfilePage.propTypes = {
     tags: PropTypes.arrayOf(
       PropTypes.string.isRequired
     ).isRequired
-  }).isRequired
+  }).isRequired,
+  idToken: PropTypes.string.isRequired
 }
 
-export default withRouter(ProfilePage)
+const authCondition = authUser => !!authUser
+
+export default withAuthorization(authCondition)(ProfilePage)

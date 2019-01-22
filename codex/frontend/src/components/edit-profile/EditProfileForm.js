@@ -4,15 +4,37 @@ import {
   Form,
   Icon,
   Input,
-  Button
+  Button,
+  message
 } from 'antd'
+import * as routes from '../../constants/routes'
+import axios from '../../axios'
 
 class NormalEditProfileForm extends React.Component {
   handleSubmit = (e) => {
     e.preventDefault()
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        console.log('Received values of form: ', values)
+        if (this.props.user.nickname === values.nickname) {
+          this.props.history.push(routes.PROFILE)
+        } else {
+          axios.get(`/users/nickname/${values.nickname}`)
+            .then(response => response.data)
+            .then((userExists) => {
+              if (userExists) {
+                message.error('Nickname is already taken !')
+              } else {
+                axios.put('/users', {
+                  nickname: values.nickname
+                }, {
+                  headers: { Authorization: `Bearer: ${this.props.idToken}` }
+                })
+                  .then(() => this.props.history.push(routes.PROFILE))
+                  .catch(error => message.error(error.message))
+              }
+            })
+            .catch(error => message.error(error.message))
+        }
       }
     })
   }
@@ -44,6 +66,9 @@ class NormalEditProfileForm extends React.Component {
 }
 
 NormalEditProfileForm.propTypes = {
+  history: PropTypes.PropTypes.shape({
+    push: PropTypes.func.isRequired
+  }).isRequired,
   form: PropTypes.shape({
     getFieldDecorator: PropTypes.func.isRequired,
     getFieldsError: PropTypes.func.isRequired,
@@ -56,7 +81,8 @@ NormalEditProfileForm.propTypes = {
     tags: PropTypes.arrayOf(
       PropTypes.string.isRequired
     ).isRequired
-  }).isRequired
+  }).isRequired,
+  idToken: PropTypes.string.isRequired
 }
 
 const WrappedEditProfileForm = Form.create({ name: 'edit_profile' })(NormalEditProfileForm)
