@@ -332,13 +332,20 @@ app.get('/tags/:tag', isUserAuthenticated, (req, res, next) => {
 /**
  * WALL API
  */
-
 // Wall posts
 app.get('/wall', isUserAuthenticated, (req, res, next) => {
   esclient.search({
     index: 'posts',
     type: 'post',
-    q: `tags:${res.locals.user.tags}`
+    query: {
+      constant_score: {
+        filter: {
+          terms: {
+            tags: res.locals.user.tags
+          }
+        }
+      }
+    }
   })
     .then(posts => res.send(posts))
     .catch(next)
