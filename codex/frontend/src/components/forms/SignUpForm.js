@@ -36,17 +36,22 @@ class NormalSignUpForm extends React.Component {
         } = this.props
 
         auth.doCreateUserWithEmailAndPassword(email, password)
-          .then(firebaseUser => axios.post('/users', {
-            uid: firebaseUser.user.uid,
-            nickname,
-            email
-          },
-          {
-            headers: { Authorization: `Bearer: ${this.props.idToken}` }
-          }))
-          .then(() => {
-            history.push(routes.WALL)
-          })
+          .then(firebaseUser => firebaseUser.user)
+          .then(authUser => authUser.getIdToken()
+            .then(idToken => axios.post('/users', {
+              uid: authUser.uid,
+              nickname,
+              email
+            },
+            {
+              headers: { Authorization: `Bearer: ${idToken}` }
+            }))
+            .then(() => {
+              history.push(routes.WALL)
+            })
+            .catch((error) => {
+              message.error(error.message)
+            }))
           .catch((error) => {
             message.error(error.message)
           })

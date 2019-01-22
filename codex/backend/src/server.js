@@ -60,12 +60,25 @@ const isUserAuthenticated = (req, res, next) => {
   const token = getBearerToken(authHeader)
   if (token) {
     return verifyTokenAndGetUID(token)
-      .then(userId => db.collection('users').doc(userId).get()
-        .then((doc) => {
-          res.locals.user = doc.data()
-          res.locals.user.id = doc.id
+      .then((userId) => {
+        // Fetch user in db if not POSTing a new user
+        if (req.method !== 'POST' || req.path !== '/users') {
+          db.collection('users').doc(userId).get()
+            .then((doc) => {
+              if (doc.exists) {
+                res.locals.user = doc.data()
+                res.locals.user.id = doc.id
+                next()
+              } else {
+                const error = new Error('User not found')
+                error.status = 404
+                next(error)
+              }
+            })
+        } else {
           next()
-        }))
+        }
+      })
       .catch(() => res.status(401).json({
         status: 401,
         message: 'UNAUTHORIZED'
@@ -82,7 +95,7 @@ const isUserAuthenticated = (req, res, next) => {
  */
 // Create a user
 app.post('/users', isUserAuthenticated, (req, res, next) => {
-  db.collection('users').doc(res.locals.user.id).set({
+  db.collection('users').doc(req.body.uid).set({
     nickname: req.body.nickname,
     tags: []
   })
