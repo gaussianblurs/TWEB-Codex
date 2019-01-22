@@ -159,22 +159,33 @@ app.post('/posts', isUserAuthenticated, (req, res, next) => {
           const tags = [] // current tags
           // eslint-disable-next-line no-underscore-dangle
           result.hits.hits.forEach(item => tags.push(item._source.tag))
-          req.body.tags.forEach((tag) => {
-            if (!tags.find(t => t === tag)) {
-              esclient.index({
-                index: 'tags',
-                type: 'tag',
-                body: {
-                  tag
-                }
-              })
-            }
-          })
+          pushNewTags(req.body.tags, tags)
         })
-        .catch(error => console.error(error))
+        .catch(error => {
+          console.error(error)
+          // tags index not set, happens for first post ever 
+          pushNewTags(req.body.tags)
+        })
     })
     .catch(next)
 })
+
+function pushNewTags(newTags, storedTags = []) {
+  const tags = [] // current tags
+  // eslint-disable-next-line no-underscore-dangle
+  storedTags.forEach(item => tags.push(item._source.tag))
+  newTags.forEach((tag) => {
+    if (!storedTags.find(t => t === tag)) {
+      esclient.index({
+        index: 'tags',
+        type: 'tag',
+        body: {
+          tag: tag
+        }
+      })
+    }
+  })
+}
 
 // Find a post by its id
 app.get('/posts/:id', isUserAuthenticated, (req, res, next) => {
