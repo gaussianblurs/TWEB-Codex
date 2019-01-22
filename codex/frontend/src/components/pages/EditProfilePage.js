@@ -162,12 +162,6 @@ EditProfilePage.propTypes = {
     uid: PropTypes.string.isRequired,
     email: PropTypes.string.isRequired
   }).isRequired,
-  user: PropTypes.shape({
-    nickname: PropTypes.string.isRequired,
-    tags: PropTypes.arrayOf(
-      PropTypes.string.isRequired
-    ).isRequired
-  }).isRequired,
   idToken: PropTypes.string.isRequired
 }
 

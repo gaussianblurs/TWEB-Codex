@@ -1,5 +1,4 @@
 import React from 'react'
-import axios from '../axios'
 import AuthUserContext from './AuthUserContext'
 import { firebaseAuth } from '../firebase'
 
@@ -9,8 +8,7 @@ const withAuthentication = (Component) => {
       super(props)
       this.state = {
         authUser: null,
-        idToken: null,
-        user: null
+        idToken: null
       }
     }
 
@@ -19,22 +17,17 @@ const withAuthentication = (Component) => {
         if (authUser) {
           authUser.getIdToken(true)
             .then(idToken => this.setState({ authUser, idToken }))
-            .then(() => this.fetchUserFromDb())
             .catch(error => console.error(error.message))
         } else {
-          this.setState({ authUser: null, idToken: null, user: null })
+          this.setState({ authUser: null, idToken: null })
         }
       })
     }
 
-    fetchUserFromDb = () => axios.get(`/users/${this.state.authUser.uid}`, { headers: { Authorization: `Bearer ${this.state.idToken}` } })
-      .then(response => this.setState({ user: response.data }))
-      .catch((error) => { console.error(error.message) })
-
     render() {
-      const { authUser, idToken, user } = this.state
+      const { authUser, idToken } = this.state
       return (
-        <AuthUserContext.Provider value={{ authUser, idToken, user }}>
+        <AuthUserContext.Provider value={{ authUser, idToken }}>
           <Component {...this.props} />
         </AuthUserContext.Provider>
       )
