@@ -1,9 +1,11 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { Layout, Button, Tooltip } from 'antd'
 import withAuthorization from '../withAuthorization'
 import Posts from '../posts/Posts'
 import SearchHeader from '../posts/SearchHeader'
 import PostModal from '../posts/PostModal'
+import axios from '../../axios'
 
 import '../../assets/scss/WallPage.scss'
 
@@ -20,12 +22,33 @@ class Wall extends React.Component {
     this.state = { ...INITIAL_STATE }
   }
 
+  componentDidMount() {
+    this.fetchWall()
+  }
+
   setModalVisible = (modalVisible) => {
     this.setState({ modalVisible })
   }
 
-  fetchPosts = () => {
+  fetchWall = () => {
+    axios.get(
+      '/wall',
+      { headers: { Authorization: `Bearer: ${this.props.idToken}` } }
+    )
+      .then((response) => {
+        const posts = response.data.hits.hits.map(post => post._source)
+        this.setState({ posts })
+      })
+  }
 
+  fetchPosts = () => {
+    // axios.get(
+    //   `/posts/search/${}/:query`,
+    //   { headers: { Authorization: `Bearer: ${this.props.idToken}` } }
+    // )
+    //   .then((response) => {
+    //     console.log('hello')
+    //   })
   }
 
   fetchMore = () => {
@@ -33,7 +56,7 @@ class Wall extends React.Component {
   }
 
   render() {
-    const { modalVisible } = this.state
+    const { modalVisible, posts } = this.state
 
     return (
       <React.Fragment>
@@ -41,7 +64,7 @@ class Wall extends React.Component {
         <div>
           <Content>
             <div className="main-container">
-              <Posts />
+              <Posts posts={posts} />
             </div>
             <div className="post-btn-container clearfix">
               <Tooltip placement="left" title="Create Post">
@@ -60,6 +83,14 @@ class Wall extends React.Component {
       </React.Fragment>
     )
   }
+}
+
+Wall.propTypes = {
+  authUser: PropTypes.shape({
+    uid: PropTypes.string.isRequired,
+    email: PropTypes.string.isRequired
+  }).isRequired,
+  idToken: PropTypes.string.isRequired
 }
 
 const authCondition = authUser => !!authUser
