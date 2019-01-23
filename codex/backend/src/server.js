@@ -205,19 +205,10 @@ app.post('/posts', isUserAuthenticated, (req, res, next) => {
       esclient.indices.exists({
         index: 'tags'
       })
-        .then((exist) => {
-          if (!exist) {
+        .then((exists) => {
+          if (!exists) {
             // tags index verification (first post)
-            req.body.tags.forEach((tag) => {
-              esclient.index({
-                index: 'tags',
-                type: 'tag',
-                body: {
-                  tag
-                }
-              })
-                .catch(next)
-            })
+            pushNewTags(req.body.tags)
           } else {
             // add new tags to DB
             esclient.search({
