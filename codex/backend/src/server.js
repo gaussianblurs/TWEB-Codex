@@ -250,6 +250,19 @@ app.get('/user/:user_id/posts', isUserAuthenticated, (req, res, next) => {
     .catch(next)
 })
 
+// Find all posts for a tag
+app.get('/posts/tag/:tag', isUserAuthenticated, (req, res, next) => {
+  esclient.search({
+    index: 'posts',
+    q: `tags: ${req.params.tag}`,
+    sort: 'claps:desc, creation_time:desc',
+    from: req.query.offset,
+    size: req.query.pagesize
+  })
+    .then(posts => res.send(posts))
+    .catch(next)
+})
+
 // Find posts by single field
 app.get('/posts/search/:field/:query', isUserAuthenticated, (req, res, next) => {
   let { query } = req.params
@@ -470,7 +483,7 @@ app.get('/tags/:tag', isUserAuthenticated, (req, res, next) => {
   esclient.search({
     index: 'tags',
     type: 'tag',
-    q: `tag:${req.params.tag}*`
+    q: `tag:${req.params.tag}*`,
   })
     .then((result) => {
       const tags = []

@@ -30,7 +30,7 @@ class TagPage extends React.Component {
   fetchPosts = () => {
     const { pageSize } = this.state
     axios.get(
-      `/posts/search/tags/${this.props.match.params.tag}?offset=0&pagesize=${pageSize}`,
+      `/posts/tag/${this.props.match.params.tag}?offset=0&pagesize=${pageSize}`,
       { headers: { Authorization: `Bearer: ${this.props.idToken}` } }
     )
       .then((response) => {
@@ -49,7 +49,7 @@ class TagPage extends React.Component {
   fetchMore = () => {
     const { page, pageSize } = this.state
     axios.get(
-      `/posts/search/tags/${this.props.match.params.tag}?offset=${(page - 1) * pageSize}&pagesize=${pageSize}`,
+      `/posts/tag/${this.props.match.params.tag}?offset=${(page - 1) * pageSize}&pagesize=${pageSize}`,
       { headers: { Authorization: `Bearer: ${this.props.idToken}` } }
     )
       .then((response) => {
