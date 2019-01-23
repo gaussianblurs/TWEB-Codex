@@ -108,7 +108,11 @@ class EditProfilePage extends React.Component {
                 </Button>
               </div>
               <div className="infos">
-                <EditProfileForm user={user} idToken={this.props.idToken} />
+                <EditProfileForm
+                  user={user}
+                  idToken={this.props.idToken}
+                  authUser={this.props.authUser}
+                />
               </div>
             </div>
           </div>

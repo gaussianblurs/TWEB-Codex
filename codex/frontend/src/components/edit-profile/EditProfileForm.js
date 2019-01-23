@@ -44,11 +44,11 @@ class NormalEditProfileForm extends React.Component {
   }
 
   handleSubmit = () => {
-    const { user } = this.props
+    const { user, authUser } = this.props
     const { nickname, selectedItems } = this.state
 
     if (user.nickname === nickname && JSON.stringify(user.tags) === JSON.stringify(selectedItems)) {
-      this.props.history.push(routes.PROFILE)
+      this.props.history.push(`${routes.PROFILE}/${authUser.uid}`)
     } else {
       axios.get(`/users/nickname/${nickname}`)
         .then(response => response.data)
@@ -64,7 +64,7 @@ class NormalEditProfileForm extends React.Component {
             })
               .then(() => {
                 message.success('Success !')
-                this.props.history.push(routes.PROFILE)
+                this.props.history.push(`${routes.PROFILE}/${authUser.uid}`)
               })
               .catch(error => message.error(error.message))
           }
@@ -141,6 +141,10 @@ NormalEditProfileForm.propTypes = {
     tags: PropTypes.arrayOf(
       PropTypes.string.isRequired
     ).isRequired
+  }).isRequired,
+  authUser: PropTypes.shape({
+    uid: PropTypes.string.isRequired,
+    email: PropTypes.string.isRequired
   }).isRequired,
   idToken: PropTypes.string.isRequired
 }

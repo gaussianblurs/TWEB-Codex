@@ -79,17 +79,19 @@ class ProfilePage extends React.Component {
                 <p>{authUser.email}</p>
                 <h2>Subscriptions</h2>
                 { user.tags.map(tag => (
-                  <Link key={tag} to="/" style={{ margin: '0 7px 0 0' }}>{`#${tag}`}</Link>
+                  <Link key={tag} to={`${routes.TAG}/${tag}`} style={{ margin: '0 7px 0 0' }}>{`#${tag}`}</Link>
                 ))}
                 <div className="clearfix">
-                  <Button onClick={this.handleClick} type="primary" className="edit-btn"> Edit Profile</Button>
+                  { this.props.match.params.id === authUser.uid &&
+                    <Button onClick={this.handleClick} type="primary" className="edit-btn"> Edit Profile</Button>
+                  }
                 </div>
               </div>
             </div>
             <div>
               <h2>Posts</h2>
               <hr />
-              <Posts posts={posts} fetchMore={this.fetchMore} idToken={idToken} />
+              <Posts posts={posts} fetchMore={this.fetchMore} idToken={idToken} tags={user.tags} />
             </div>
           </div>
         </Content>
