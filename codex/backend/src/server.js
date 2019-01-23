@@ -251,7 +251,7 @@ app.get('/posts/search/:field/:query', isUserAuthenticated, (req, res, next) => 
     case 'content':
       searchQuery = `content:${query}`
       break
-    case 'tag':
+    case 'tags':
       searchQuery = `tags:${query}`
       break
     default:
@@ -260,7 +260,22 @@ app.get('/posts/search/:field/:query', isUserAuthenticated, (req, res, next) => 
   }
   esclient.search({
     index: 'posts',
-    q: searchQuery,
+    body: {
+      query: {
+        function_score: {
+          query: {
+            query_string: {
+              query: searchQuery
+            }
+          },
+          field_value_factor: {
+            field: 'claps',
+            factor: 1.2,
+            modifier: 'log1p'
+          }
+        }
+      }
+    },
     from: req.query.offset,
     size: req.query.pagesize
   })
@@ -272,7 +287,22 @@ app.get('/posts/search/:field/:query', isUserAuthenticated, (req, res, next) => 
 app.get('/posts/search/:query', isUserAuthenticated, (req, res, next) => {
   esclient.search({
     index: 'posts',
-    q: `${req.params.query}`,
+    body: {
+      query: {
+        function_score: {
+          query: {
+            query_string: {
+              query: req.params.query
+            }
+          },
+          field_value_factor: {
+            field: 'claps',
+            factor: 1.2,
+            modifier: 'log1p'
+          }
+        }
+      }
+    },
     from: req.query.offset,
     size: req.query.pagesize
   })
@@ -407,7 +437,7 @@ app.get('/tags', isUserAuthenticated, (req, res, next) => {
       const tags = []
       // eslint-disable-next-line no-underscore-dangle
       result.hits.hits.forEach(item => tags.push(item._source.tag))
-      res.status(200).send(tags)
+      res.send(tags)
     })
     .catch(next)
 })
@@ -423,7 +453,7 @@ app.get('/tags/:tag', isUserAuthenticated, (req, res, next) => {
       const tags = []
       // eslint-disable-next-line no-underscore-dangle
       result.hits.hits.forEach(item => tags.push(item._source.tag))
-      res.status(200).send(tags)
+      res.send(tags)
     })
     .catch(next)
 })
