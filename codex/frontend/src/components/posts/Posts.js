@@ -13,7 +13,7 @@ const Posts = props => (
       loader={<Spinner />}
     >
       { props.posts.map(post => (
-        <PostsListItem key={post.id} post={post} />
+        <PostsListItem key={post.id} post={post} idToken={props.idToken} />
       )) }
     </InfiniteScroll>
   </div>
@@ -22,7 +22,8 @@ const Posts = props => (
 Posts.propTypes = {
   posts: PropTypes.arrayOf(
     PropTypes.shape({
-      creator_id: PropTypes.number.isRequired,
+      id: PropTypes.string.isRequired,
+      creator_id: PropTypes.string.isRequired,
       title: PropTypes.string.isRequired,
       description: PropTypes.string.isRequired,
       content: PropTypes.string.isRequired,
@@ -30,11 +31,11 @@ Posts.propTypes = {
         PropTypes.string.isRequired
       ).isRequired,
       claps: PropTypes.number.isRequired,
-      user: PropTypes.string.isRequired,
       creation_time: PropTypes.number.isRequired
     }).isRequired
   ).isRequired,
-  fetchMore: PropTypes.func.isRequired
+  fetchMore: PropTypes.func.isRequired,
+  idToken: PropTypes.string.isRequired
 }
 
 export default Posts

@@ -6,6 +6,7 @@ import TimeAgo from 'react-timeago'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import tomorrow from 'react-syntax-highlighter/dist/styles/prism/tomorrow'
 import { OutlineClapIcon } from './utils/Icons'
+import axios from '../../axios'
 
 const INITIAL_STATE = {
   post: [],
@@ -24,8 +25,6 @@ class PostsListItem extends React.Component {
     this.state = { ...INITIAL_STATE }
   }
 
-
-
   componentDidMount() {
     const { claps } = this.props.post
     this.setState({
@@ -43,6 +42,11 @@ class PostsListItem extends React.Component {
   }
 
   dismissCounter = (callback) => {
+    axios.put(
+      `/posts/${this.post.id}/update-claps`,
+      { claps: this.state.clapsInc },
+      { headers: { Authorization: `Bearer: ${this.props.idToken}` } }
+    )
     this.setState({
       clapsVisible: false
     }, callback)
@@ -115,7 +119,8 @@ class PostsListItem extends React.Component {
 
 PostsListItem.propTypes = {
   post: PropTypes.shape({
-    creator_id: PropTypes.number.isRequired,
+    id: PropTypes.string.isRequired,
+    creator_id: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
     content: PropTypes.string.isRequired,
@@ -123,9 +128,9 @@ PostsListItem.propTypes = {
       PropTypes.string.isRequired
     ).isRequired,
     claps: PropTypes.number.isRequired,
-    user: PropTypes.string.isRequired,
     creation_time: PropTypes.number.isRequired
-  }).isRequired
+  }).isRequired,
+  idToken: PropTypes.string.isRequired
 }
 
 export default PostsListItem

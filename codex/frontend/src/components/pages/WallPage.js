@@ -36,7 +36,10 @@ class Wall extends React.Component {
       { headers: { Authorization: `Bearer: ${this.props.idToken}` } }
     )
       .then((response) => {
-        const posts = response.data.hits.hits.map(post => post._source)
+        const posts = response.data.hits.hits.map((post) => {
+          const newPost = { ...post._source, id: post._id }
+          return newPost
+        })
         this.setState({ posts })
       })
   }
@@ -57,6 +60,7 @@ class Wall extends React.Component {
 
   render() {
     const { modalVisible, posts } = this.state
+    const { idToken } = this.props
 
     return (
       <React.Fragment>
@@ -64,7 +68,7 @@ class Wall extends React.Component {
         <div>
           <Content>
             <div className="main-container">
-              <Posts posts={posts} />
+              <Posts posts={posts} fetchMore={this.fetchMore} idToken={idToken} />
             </div>
             <div className="post-btn-container clearfix">
               <Tooltip placement="left" title="Create Post">

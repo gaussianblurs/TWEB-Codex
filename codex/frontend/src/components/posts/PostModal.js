@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Modal, Steps, Button, Input, message } from 'antd'
+import { Modal, Steps, Button, message } from 'antd'
 import PostModalForm from './PostModalForm'
 
 const { Step } = Steps
@@ -35,8 +35,12 @@ class PostModal extends React.Component {
     })
   }
 
-  handlePost = () => {
+  handlePost = (title, description, content, tags) => {
     message.success('Post successfully sent!')
+    console.log(title)
+    console.log(description)
+    console.log(content)
+    console.log(tags)
     this.props.setModalVisible(false)
     this.setState({
       post: false,
