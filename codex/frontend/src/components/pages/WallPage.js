@@ -15,7 +15,7 @@ const INITIAL_STATE = {
   posts: [],
   modalVisible: false,
   page: 1,
-  pageSize: 2,
+  pageSize: 5,
   total: 0
 }
 

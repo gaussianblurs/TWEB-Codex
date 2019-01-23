@@ -364,7 +364,10 @@ app.get('/wall', isUserAuthenticated, (req, res, next) => {
     .catch(next)
 })
 
-// Notifications
+/**
+ * NOTIFICATIONS API
+ */
+// Get notifications for a user
 app.get('/notif/:user_id', isUserAuthenticated, (req, res, next) => {
   const { lastSeen } = req.locals.user.lastSeen
   const tagsSubscribed = req.locals.user.tags
