@@ -43,7 +43,12 @@ The users share Markdown formatted code. They also provide a brief title and des
 - Database: probably GCP (Google Cloud Platform)
 
 ## Report
+TODO
 
 ### Frontend
+TODO
 
 ### Backend
+The backend runs on Node.js providing a RESTful API to the frontend. To connect Node.js and the elasticsearch containers, the elasticsearch.js library is used.   
+As stated in the Technologies section, two different databases were setup for this project: in addition to the Firebase authentication service, which stores emails, passwords and unique identifiers of the users, the application is connected to a Firestore database for storing users' informations such as nickname and subscribed tags, and to an Elasticsearch database for storing users' posts.   
+When posting a new post which contains tags to the database, it is necessary to check if the "tags" index has been created, and if not, create it and add the new tags to the database. To avoid duplicate tags, it is necessary to first query all tags from the database, then add only those that are not already present.
