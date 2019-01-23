@@ -33,11 +33,12 @@ class ProfilePage extends React.Component {
         hasLoaded: true
       }))
       .catch(error => message.error(error.message))
+    this.fetchUserPosts()
   }
 
   fetchUserPosts = () => {
     axios.get(
-      '/wall',
+      `/user/${this.props.match.params.id}/posts`,
       { headers: { Authorization: `Bearer: ${this.props.idToken}` } }
     )
       .then((response) => {
@@ -45,8 +46,13 @@ class ProfilePage extends React.Component {
           const newPost = { ...post._source, id: post._id }
           return newPost
         })
+        console.log(posts)
         this.setState({ posts })
       })
+      .catch(error => message.error(error.message))
+  }
+
+  fetchMore = () => {
   }
 
   handleClick = () => {
@@ -54,8 +60,8 @@ class ProfilePage extends React.Component {
   }
 
   render() {
-    const { authUser } = this.props
-    const { hasLoaded, user } = this.state
+    const { authUser, idToken } = this.props
+    const { hasLoaded, user, posts } = this.state
 
     if (hasLoaded) {
       return (
