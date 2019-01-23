@@ -22,8 +22,7 @@ const Main = (props) => {
         render={() => <WallPage authUser={authUser} idToken={idToken} />}
       />
       <Route
-        exact
-        path={routes.PROFILE}
+        path={`${routes.PROFILE}/:id`}
         render={() => <ProfilePage authUser={authUser} idToken={idToken} />}
       />
       <Route

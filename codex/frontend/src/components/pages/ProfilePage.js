@@ -25,14 +25,14 @@ class ProfilePage extends React.Component {
   }
 
   componentDidMount = () => {
-    axios.get(`/users/${this.props.authUser.uid}`, {
+    axios.get(`/users/${this.props.match.params.id}`, {
       headers: { Authorization: `Bearer: ${this.props.idToken}` }
     })
       .then(response => this.setState({
         user: response.data,
         hasLoaded: true
       }))
-      .catch(error => message.error(error))
+      .catch(error => message.error(error.message))
   }
 
   fetchUserPosts = () => {
@@ -97,6 +97,11 @@ class ProfilePage extends React.Component {
 ProfilePage.propTypes = {
   history: PropTypes.PropTypes.shape({
     push: PropTypes.func.isRequired
+  }).isRequired,
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      id: PropTypes.string.isRequired
+    })
   }).isRequired,
   authUser: PropTypes.shape({
     uid: PropTypes.string.isRequired,

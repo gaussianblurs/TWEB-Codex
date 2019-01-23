@@ -42,7 +42,7 @@ class MenuHeader extends React.Component {
             .then(response => this.setState({
               user: response.data
             }))
-            .catch(error => message.error(error)))
+            .catch(error => message.error(error.message)))
       }
     })
   }
@@ -87,7 +87,7 @@ class MenuHeader extends React.Component {
             title={collapsed ? 'Profile' : (<div type="menu"><Avatar size={35} /></div>)}
           >
             <Menu.Item>
-              <Link to={routes.PROFILE}>Profile</Link>
+              <Link to={`${routes.PROFILE}/${authUser.uid}`}>Profile</Link>
             </Menu.Item>
             <Menu.Item>
               <Button type="primary" onClick={auth.doSignOut} style={{ width: '100%' }}>Sign Out</Button>
