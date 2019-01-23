@@ -34,7 +34,6 @@ class NormalEditProfileForm extends React.Component {
 
   fetchTags = (str) => {
     console.log(str)
-    console.log(idToken)
     axios.get(
       `/tags/${str}`,
       { headers: { Authorization: `Bearer: ${this.props.idToken}` } }

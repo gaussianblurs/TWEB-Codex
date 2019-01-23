@@ -193,7 +193,7 @@ app.post('/posts', isUserAuthenticated, (req, res, next) => {
         })
         .catch(error => {
           console.error(error)
-          // tags index not set, happens for the first post ever 
+          // tags index not set, happens for the first post ever
           pushNewTags(req.body.tags)
         })
     })
@@ -212,7 +212,7 @@ function pushNewTags(newTags, storedTags = []) {
         index: 'tags',
         type: 'tag',
         body: {
-          tag: tag
+          tag
         }
       })
     }
