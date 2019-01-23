@@ -95,6 +95,7 @@ class Wall extends React.Component {
       headers: { Authorization: `Bearer: ${this.props.idToken}` }
     })
       .then((response) => {
+        console.log(response)
         this.setState({
           tags: response.data.tags
         })
