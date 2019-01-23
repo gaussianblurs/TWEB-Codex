@@ -147,7 +147,7 @@ app.get('/users/nickname/:nickname', (req, res, next) => {
 app.put('/tags/:tag/subscribe', isUserAuthenticated, (req, res, next) => {
   console.log(req.params.tag)
   db.collection('users').doc(res.locals.user.id).update({
-    tags: admin.firestore.FieldValue.arrayUnion(req.params.tag)
+    tags: firebase.firestore.FieldValue.arrayUnion(req.params.tag)
   })
     .then(() => res.sendStatus(200))
     .catch(next)
@@ -156,7 +156,7 @@ app.put('/tags/:tag/subscribe', isUserAuthenticated, (req, res, next) => {
 // User unsubscription to a tag
 app.put('/tags/:tag/unsubscribe', isUserAuthenticated, (req, res, next) => {
   db.collection('users').doc(res.locals.user.id).update({
-    tags: admin.firestore.FieldValue.arrayRemove(req.params.tag)
+    tags: firebase.firestore.FieldValue.arrayRemove(req.params.tag)
   })
     .then(() => res.sendStatus(200))
     .catch(next)
