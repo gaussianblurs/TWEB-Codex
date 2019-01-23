@@ -7,7 +7,7 @@ import Spinner from '../utils/Spinner'
 const Posts = props => (
   <div className="posts-container">
     <InfiniteScroll
-      dataLength={1}
+      dataLength={props.total}
       next={props.fetchMore}
       hasMore={props.hasMore}
       loader={<Spinner />}
@@ -36,7 +36,8 @@ Posts.propTypes = {
     }).isRequired
   ).isRequired,
   fetchMore: PropTypes.func.isRequired,
-  hasMore: PropTypes.func.isRequired,
+  total: PropTypes.number.isRequired,
+  hasMore: PropTypes.bool.isRequired,
   idToken: PropTypes.string.isRequired
 }
 

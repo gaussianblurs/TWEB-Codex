@@ -360,7 +360,7 @@ app.get('/wall', isUserAuthenticated, (req, res, next) => {
     size: req.query.pagesize,
     sort: 'creation_time:desc'
   })
-    .then(posts => res.send(JSON.stringify(posts, null, 2)))
+    .then(posts => res.send(posts))
     .catch(next)
 })
 

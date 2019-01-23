@@ -70,7 +70,7 @@ class Wall extends React.Component {
       })
   }
 
-  hasMore = () => this.state.page * this.state.pageSize < this.state.total
+  hasMore = () => (this.state.page - 1) * this.state.pageSize < this.state.total
 
   fetchPosts = (field, query) => {
     axios.get(
@@ -87,7 +87,7 @@ class Wall extends React.Component {
   }
 
   render() {
-    const { modalVisible, posts } = this.state
+    const { modalVisible, posts, total } = this.state
     const { idToken, authUser } = this.props
 
     return (
@@ -98,8 +98,9 @@ class Wall extends React.Component {
             <div className="main-container">
               <Posts
                 posts={posts}
+                total={total}
                 fetchMore={this.fetchMore}
-                hasMore={this.hasMore}
+                hasMore={this.hasMore()}
                 idToken={idToken}
               />
             </div>
