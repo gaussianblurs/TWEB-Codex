@@ -216,6 +216,7 @@ app.post('/posts', isUserAuthenticated, (req, res, next) => {
                   tag
                 }
               })
+                .catch(next)
             })
           } else {
             // add new tags to DB
@@ -357,7 +358,7 @@ app.get('/wall', isUserAuthenticated, (req, res, next) => {
     q: `tags:${res.locals.user.tags}`,
     from: req.query.offset,
     size: req.query.pagesize,
-    sort : 'creation_time:desc'
+    sort: 'creation_time:desc'
   })
     .then(posts => res.send(JSON.stringify(posts, null, 2)))
     .catch(next)
