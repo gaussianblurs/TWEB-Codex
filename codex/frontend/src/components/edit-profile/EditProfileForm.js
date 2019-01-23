@@ -14,14 +14,32 @@ import axios from '../../axios'
 
 const { Option } = Select
 
+const INITIAL_STATE = {
+  similarTags: [],
+  value: []
+}
+
 class NormalEditProfileForm extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = { ...INITIAL_STATE }
+  }
+
+  componentDidMount() {
+    console.log(this.props)
+    this.setState({
+      value: this.props.user.tags
+    })
+  }
+
   fetchTags = (str) => {
-    const { idToken } = this.props
+    console.log(str)
+    console.log(idToken)
     axios.get(
       `/tags/${str}`,
-      { headers: { Authorization: `Bearer: ${idToken}` } }
+      { headers: { Authorization: `Bearer: ${this.props.idToken}` } }
     )
-      .then(tags => console.log(tags))
+      .then(tags => this.setState({ similarTags: tags }))
   }
 
   handleSubmit = (e) => {
@@ -54,6 +72,7 @@ class NormalEditProfileForm extends React.Component {
 
   render() {
     const { getFieldDecorator } = this.props.form
+    const { value, similarTags } = this.state
     const { user } = this.props
 
     return (
@@ -73,17 +92,17 @@ class NormalEditProfileForm extends React.Component {
         <Form.Item
           help=""
         >
-          {getFieldDecorator('tags', {
-            rules: [
-              { required: false, type: 'array' }
-            ]
-          })(
-            <Select mode="multiple" placeholder="Select tags" defaultValue={user.tags}>
-              { user.tags.map(tag => (
-                <Option key={tag} value={tag}>{tag}</Option>
-              ))}
-            </Select>
-          )}
+          <Select
+            mode="multiple"
+            placeholder="Select tags"
+            defaultValue={user.tags}
+            onSearch={this.fetchTags}
+            onChange={this.handleChange}
+          >
+            { similarTags.map(tag => (
+              <Option key={tag} value={tag}>{tag}</Option>
+            ))}
+          </Select>
         </Form.Item>
         <Form.Item>
           <div className="clearfix">
