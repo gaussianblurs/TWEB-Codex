@@ -13,7 +13,7 @@ const Posts = props => (
       loader={<Spinner />}
     >
       { props.posts.map(post => (
-        <PostsListItem key={post.id} post={post} idToken={props.idToken} />
+        <PostsListItem key={post.id} post={post} idToken={props.idToken} tags={props.tags} />
       )) }
     </InfiniteScroll>
   </div>
@@ -36,7 +36,10 @@ Posts.propTypes = {
     }).isRequired
   ).isRequired,
   fetchMore: PropTypes.func.isRequired,
-  idToken: PropTypes.string.isRequired
+  idToken: PropTypes.string.isRequired,
+  tags: PropTypes.arrayOf(
+    PropTypes.string.isRequired
+  ).isRequired
 }
 
 export default Posts

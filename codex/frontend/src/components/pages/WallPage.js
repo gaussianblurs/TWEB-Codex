@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Layout, Button, Tooltip } from 'antd'
+import { Layout, Button, Tooltip, message } from 'antd'
 import withAuthorization from '../withAuthorization'
 import Posts from '../posts/Posts'
 import SearchHeader from '../posts/SearchHeader'
@@ -13,7 +13,9 @@ const { Content } = Layout
 
 const INITIAL_STATE = {
   posts: [],
-  modalVisible: false
+  modalVisible: false,
+  tags: [],
+  hasLoaded: false
 }
 
 class Wall extends React.Component {
@@ -24,6 +26,7 @@ class Wall extends React.Component {
 
   componentDidMount() {
     this.fetchWall()
+    this.fetchUser()
   }
 
   setModalVisible = (modalVisible) => {
@@ -42,6 +45,7 @@ class Wall extends React.Component {
         })
         this.setState({ posts })
       })
+      .catch(error => message.error(error.message))
   }
 
   fetchPosts = (field, query) => {
@@ -56,6 +60,19 @@ class Wall extends React.Component {
         })
         this.setState({ posts })
       })
+      .catch(error => message.error(error.message))
+  }
+
+  fetchUser = () => {
+    axios.get(`/users/${this.props.authUser.uid}`, {
+      headers: { Authorization: `Bearer: ${this.props.idToken}` }
+    })
+      .then((response) => {
+        this.setState({
+          tags: response.data.tags
+        })
+      })
+      .catch(error => message.error(error.message))
   }
 
   fetchMore = () => {
@@ -63,7 +80,7 @@ class Wall extends React.Component {
   }
 
   render() {
-    const { modalVisible, posts } = this.state
+    const { modalVisible, posts, tags } = this.state
     const { idToken, authUser } = this.props
 
     return (
@@ -72,7 +89,7 @@ class Wall extends React.Component {
         <div>
           <Content>
             <div className="main-container">
-              <Posts posts={posts} fetchMore={this.fetchMore} idToken={idToken} />
+              <Posts posts={posts} fetchMore={this.fetchMore} idToken={idToken} tags={tags} />
             </div>
             <div className="post-btn-container clearfix">
               <Tooltip placement="left" title="Create Post">
