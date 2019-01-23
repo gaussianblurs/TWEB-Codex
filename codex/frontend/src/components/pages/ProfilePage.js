@@ -46,7 +46,6 @@ class ProfilePage extends React.Component {
           const newPost = { ...post._source, id: post._id }
           return newPost
         })
-        console.log(posts)
         this.setState({ posts })
       })
       .catch(error => message.error(error.message))

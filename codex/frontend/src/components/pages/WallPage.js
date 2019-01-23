@@ -13,7 +13,10 @@ const { Content } = Layout
 
 const INITIAL_STATE = {
   posts: [],
-  modalVisible: false
+  modalVisible: false,
+  page: 1,
+  pageSize: 2,
+  total: 0
 }
 
 class Wall extends React.Component {
@@ -31,8 +34,9 @@ class Wall extends React.Component {
   }
 
   fetchWall = () => {
+    const { pageSize } = this.state
     axios.get(
-      '/wall',
+      `/wall?offset=0&pagesize=${pageSize}`,
       { headers: { Authorization: `Bearer: ${this.props.idToken}` } }
     )
       .then((response) => {
@@ -40,9 +44,33 @@ class Wall extends React.Component {
           const newPost = { ...post._source, id: post._id }
           return newPost
         })
-        this.setState({ posts })
+        this.setState(prevState => ({
+          posts,
+          total: response.data.hits.total,
+          page: prevState.page + 1
+        }))
       })
   }
+
+  fetchMore = () => {
+    const { page, pageSize } = this.state
+    axios.get(
+      `/wall?offset=${(page - 1) * pageSize}&pagesize=${pageSize}`,
+      { headers: { Authorization: `Bearer: ${this.props.idToken}` } }
+    )
+      .then((response) => {
+        const newPosts = response.data.hits.hits.map((post) => {
+          const newPost = { ...post._source, id: post._id }
+          return newPost
+        })
+        this.setState(prevState => ({
+          posts: [...prevState.posts, ...newPosts],
+          page: prevState.page + 1
+        }))
+      })
+  }
+
+  hasMore = () => this.state.page * this.state.pageSize < this.state.total
 
   fetchPosts = (field, query) => {
     axios.get(
@@ -58,10 +86,6 @@ class Wall extends React.Component {
       })
   }
 
-  fetchMore = () => {
-
-  }
-
   render() {
     const { modalVisible, posts } = this.state
     const { idToken, authUser } = this.props
@@ -72,7 +96,12 @@ class Wall extends React.Component {
         <div>
           <Content>
             <div className="main-container">
-              <Posts posts={posts} fetchMore={this.fetchMore} idToken={idToken} />
+              <Posts
+                posts={posts}
+                fetchMore={this.fetchMore}
+                hasMore={this.hasMore}
+                idToken={idToken}
+              />
             </div>
             <div className="post-btn-container clearfix">
               <Tooltip placement="left" title="Create Post">

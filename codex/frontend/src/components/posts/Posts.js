@@ -9,7 +9,7 @@ const Posts = props => (
     <InfiniteScroll
       dataLength={1}
       next={props.fetchMore}
-      hasMore={false}
+      hasMore={props.hasMore}
       loader={<Spinner />}
     >
       { props.posts.map(post => (
@@ -36,6 +36,7 @@ Posts.propTypes = {
     }).isRequired
   ).isRequired,
   fetchMore: PropTypes.func.isRequired,
+  hasMore: PropTypes.func.isRequired,
   idToken: PropTypes.string.isRequired
 }
 

@@ -264,9 +264,6 @@ app.get('/posts/search/:field/:query', isUserAuthenticated, (req, res, next) => 
     case 'author':
       searchQuery = `author:${query}`
       break
-    case 'user_id':
-      searchQuery = `creator_id:${query}`
-      break
     case 'content':
       searchQuery = `content:${query}`
       break
