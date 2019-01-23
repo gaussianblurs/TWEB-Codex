@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Modal, Steps, Button, message } from 'antd'
 import PostModalForm from './PostModalForm'
+import axios from '../../axios'
 
 const { Step } = Steps
 
@@ -37,10 +38,11 @@ class PostModal extends React.Component {
 
   handlePost = (title, description, content, tags) => {
     message.success('Post successfully sent!')
-    console.log(title)
-    console.log(description)
-    console.log(content)
-    console.log(tags)
+    axios.post(
+      '/posts',
+      { title, description, content, tags },
+      { headers: { Authorization: `Bearer: ${this.props.idToken}` } }
+    )
     this.props.setModalVisible(false)
     this.setState({
       post: false,
@@ -106,7 +108,8 @@ class PostModal extends React.Component {
 
 PostModal.propTypes = {
   setModalVisible: PropTypes.func.isRequired,
-  modalVisible: PropTypes.bool.isRequired
+  modalVisible: PropTypes.bool.isRequired,
+  idToken: PropTypes.string.isRequired
 }
 
 export default PostModal

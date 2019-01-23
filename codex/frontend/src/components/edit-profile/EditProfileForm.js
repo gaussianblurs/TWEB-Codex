@@ -16,7 +16,8 @@ const { Option } = Select
 
 const INITIAL_STATE = {
   similarTags: [],
-  selectedItems: []
+  selectedItems: [],
+  nickname: ''
 }
 
 class NormalEditProfileForm extends React.Component {
@@ -41,40 +42,44 @@ class NormalEditProfileForm extends React.Component {
       })
   }
 
-  handleSubmit = (e) => {
-    e.preventDefault()
-    this.props.form.validateFields((err, values) => {
-      if (!err) {
-        if (this.props.user.nickname === values.nickname) {
-          this.props.history.push(routes.PROFILE)
-        } else {
-          axios.get(`/users/nickname/${values.nickname}`)
-            .then(response => response.data)
-            .then((userExists) => {
-              if (userExists) {
-                message.error('Nickname is already taken !')
-              } else {
-                axios.put('/users', {
-                  nickname: values.nickname
-                }, {
-                  headers: { Authorization: `Bearer: ${this.props.idToken}` }
-                })
-                  .then(() => this.props.history.push(routes.PROFILE))
-                  .catch(error => message.error(error.message))
-              }
+  handleSubmit = () => {
+    const { user } = this.this.props
+    const { nickname, selectedItems } = this.state
+
+    if (user.nickname === nickname && user.tags.equals(selectedItems) ) {
+      this.props.history.push(routes.PROFILE)
+    } else {
+      axios.get(`/users/nickname/${nickname}`)
+        .then(response => response.data)
+        .then((userExists) => {
+          if (userExists) {
+            message.error('Nickname is already taken !')
+          } else {
+            axios.put('/users', {
+              nickname
+            }, {
+              headers: { Authorization: `Bearer: ${this.props.idToken}` }
             })
-            .catch(error => message.error(error.message))
-        }
-      }
-    })
+              .then(() => this.props.history.push(routes.PROFILE))
+              .catch(error => message.error(error.message))
+          }
+        })
+        .catch(error => message.error(error.message))
+    }
   }
 
   handleChange = (selectedItems) => {
     this.setState({ selectedItems })
   }
 
+  handleNicknameChange = (e) => {
+    e.preventDefault()
+    this.setState({
+      nickname: e.target.value
+    })
+  }
+
   render() {
-    const { getFieldDecorator } = this.props.form
     const { selectedItems, similarTags } = this.state
     const { user } = this.props
     const filteredOptions = similarTags.filter(o => !selectedItems.includes(o))
@@ -83,14 +88,11 @@ class NormalEditProfileForm extends React.Component {
       <Form onSubmit={this.handleSubmit} className="login-form">
         <h2>Nickname</h2>
         <Form.Item>
-          {getFieldDecorator('nickname', {
-            rules: [{ required: true, message: 'Please input a nickname !' }]
-          })(
-            <Input
-              prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-              placeholder={user.nickname}
-            />
-          )}
+          <Input
+            prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+            placeholder={user.nickname}
+            onChange={this.handleNicknameChange}
+          />
         </Form.Item>
         <h2>Subscriptions</h2>
         <Form.Item
@@ -110,7 +112,12 @@ class NormalEditProfileForm extends React.Component {
         </Form.Item>
         <Form.Item>
           <div className="clearfix">
-            <Button type="primary" htmlType="submit" className="submit-btn">
+            <Button
+              type="primary"
+              htmlType="submit"
+              className="submit-btn"
+              onClick={this.handleSubmit}
+            >
               Submit Changes
             </Button>
           </div>
@@ -123,13 +130,6 @@ class NormalEditProfileForm extends React.Component {
 NormalEditProfileForm.propTypes = {
   history: PropTypes.PropTypes.shape({
     push: PropTypes.func.isRequired
-  }).isRequired,
-  form: PropTypes.shape({
-    getFieldDecorator: PropTypes.func.isRequired,
-    getFieldsError: PropTypes.func.isRequired,
-    getFieldError: PropTypes.func.isRequired,
-    isFieldTouched: PropTypes.func.isRequired,
-    validateFields: PropTypes.func.isRequired
   }).isRequired,
   user: PropTypes.shape({
     nickname: PropTypes.string.isRequired,

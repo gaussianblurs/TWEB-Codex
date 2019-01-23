@@ -81,7 +81,11 @@ class Wall extends React.Component {
                 />
               </Tooltip>
             </div>
-            <PostModal modalVisible={modalVisible} setModalVisible={this.setModalVisible} />
+            <PostModal
+              modalVisible={modalVisible}
+              setModalVisible={this.setModalVisible}
+              idToken={idToken}
+            />
           </Content>
         </div>
       </React.Fragment>

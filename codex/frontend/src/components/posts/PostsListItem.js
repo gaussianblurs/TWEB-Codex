@@ -9,7 +9,6 @@ import { OutlineClapIcon } from './utils/Icons'
 import axios from '../../axios'
 
 const INITIAL_STATE = {
-  post: [],
   totalClaps: 0,
   totalClapsBadge: 0,
   claps: 0,
@@ -26,6 +25,7 @@ class PostsListItem extends React.Component {
   }
 
   componentDidMount() {
+    console.log(this.props)
     const { claps } = this.props.post
     this.setState({
       totalClaps: claps,
@@ -43,7 +43,7 @@ class PostsListItem extends React.Component {
 
   dismissCounter = (callback) => {
     axios.put(
-      `/posts/${this.post.id}/update-claps`,
+      `/posts/${this.props.post.id}/update-claps`,
       { claps: this.state.clapsInc },
       { headers: { Authorization: `Bearer: ${this.props.idToken}` } }
     )
@@ -109,7 +109,7 @@ class PostsListItem extends React.Component {
             { this.displayCounter() }
           </div>
           <p className="post-date">
-            Posted&nbsp;<TimeAgo date={post.creation_time} /> by <Link to="/">@psrochat</Link>
+            Posted&nbsp;<TimeAgo date={post.creation_time} /> by <Link to="/">@{post.author}</Link>
           </p>
         </div>
       </div>
@@ -120,6 +120,7 @@ class PostsListItem extends React.Component {
 PostsListItem.propTypes = {
   post: PropTypes.shape({
     id: PropTypes.string.isRequired,
+    author: PropTypes.string.isRequired,
     creator_id: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
