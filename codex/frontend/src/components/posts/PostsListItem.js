@@ -27,13 +27,18 @@ class PostsListItem extends React.Component {
   }
 
   componentDidMount() {
-    console.log(this.props.tags)
     const { claps } = this.props.post
     this.setState({
       totalClaps: claps,
       totalClapsBadge: claps,
       tags: this.props.tags
     })
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (JSON.stringify(nextProps.tags) !== JSON.stringify(this.state.tags)) {
+      this.setState({ tags: nextProps.tags })
+    }
   }
 
   computeTotal = () => {
