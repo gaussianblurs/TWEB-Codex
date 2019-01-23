@@ -15,7 +15,9 @@ const INITIAL_STATE = {
   posts: [],
   modalVisible: false,
   tags: [],
-  hasLoaded: false
+  page: 1,
+  pageSize: 2,
+  total: 0
 }
 
 class Wall extends React.Component {
@@ -34,8 +36,9 @@ class Wall extends React.Component {
   }
 
   fetchWall = () => {
+    const { pageSize } = this.state
     axios.get(
-      '/wall',
+      `/wall?offset=0&pagesize=${pageSize}`,
       { headers: { Authorization: `Bearer: ${this.props.idToken}` } }
     )
       .then((response) => {
@@ -43,10 +46,34 @@ class Wall extends React.Component {
           const newPost = { ...post._source, id: post._id }
           return newPost
         })
-        this.setState({ posts })
+        this.setState(prevState => ({
+          posts,
+          total: response.data.hits.total,
+          page: prevState.page + 1
+        }))
       })
       .catch(error => message.error(error.message))
   }
+
+  fetchMore = () => {
+    const { page, pageSize } = this.state
+    axios.get(
+      `/wall?offset=${(page - 1) * pageSize}&pagesize=${pageSize}`,
+      { headers: { Authorization: `Bearer: ${this.props.idToken}` } }
+    )
+      .then((response) => {
+        const newPosts = response.data.hits.hits.map((post) => {
+          const newPost = { ...post._source, id: post._id }
+          return newPost
+        })
+        this.setState(prevState => ({
+          posts: [...prevState.posts, ...newPosts],
+          page: prevState.page + 1
+        }))
+      })
+  }
+
+  hasMore = () => (this.state.page - 1) * this.state.pageSize < this.state.total
 
   fetchPosts = (field, query) => {
     axios.get(
@@ -75,12 +102,12 @@ class Wall extends React.Component {
       .catch(error => message.error(error.message))
   }
 
-  fetchMore = () => {
-
-  }
-
   render() {
+<<<<<<< HEAD
     const { modalVisible, posts, tags } = this.state
+=======
+    const { modalVisible, posts, total } = this.state
+>>>>>>> 1ac219b865750b9d25bd2717a4ef60ebedc586b9
     const { idToken, authUser } = this.props
 
     return (
@@ -89,7 +116,17 @@ class Wall extends React.Component {
         <div>
           <Content>
             <div className="main-container">
+<<<<<<< HEAD
               <Posts posts={posts} fetchMore={this.fetchMore} idToken={idToken} tags={tags} />
+=======
+              <Posts
+                posts={posts}
+                total={total}
+                fetchMore={this.fetchMore}
+                hasMore={this.hasMore()}
+                idToken={idToken}
+              />
+>>>>>>> 1ac219b865750b9d25bd2717a4ef60ebedc586b9
             </div>
             <div className="post-btn-container clearfix">
               <Tooltip placement="left" title="Create Post">
