@@ -145,7 +145,6 @@ app.get('/users/nickname/:nickname', (req, res, next) => {
 
 // User subscribtion to a tag
 app.put('/tags/:tag/subscribe', isUserAuthenticated, (req, res, next) => {
-  console.log(req.params.tag)
   db.collection('users').doc(res.locals.user.id).update({
     tags: firebase.firestore.FieldValue.arrayUnion(req.params.tag)
   })
@@ -248,6 +247,19 @@ app.get('/user/:user_id/posts', isUserAuthenticated, (req, res, next) => {
     sort: 'creation_time:desc'
   })
     .then(post => res.send(post))
+    .catch(next)
+})
+
+// Find all posts for a tag
+app.get('/posts/tag/:tag', isUserAuthenticated, (req, res, next) => {
+  esclient.search({
+    index: 'posts',
+    q: `tags: ${req.params.tag}`,
+    sort: 'claps:desc, creation_time:desc',
+    from: req.query.offset,
+    size: req.query.pagesize
+  })
+    .then(posts => res.send(posts))
     .catch(next)
 })
 
@@ -471,7 +483,7 @@ app.get('/tags/:tag', isUserAuthenticated, (req, res, next) => {
   esclient.search({
     index: 'tags',
     type: 'tag',
-    q: `tag:${req.params.tag}*`
+    q: `tag:${req.params.tag}*`,
   })
     .then((result) => {
       const tags = []
