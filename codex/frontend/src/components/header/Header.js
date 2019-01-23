@@ -8,6 +8,7 @@ import {
   Dropdown,
   Icon,
   Avatar,
+  Popover,
   message
 } from 'antd'
 import logo from '../../assets/images/logo.svg'
@@ -67,6 +68,20 @@ class MenuHeader extends React.Component {
         >
           <Menu.Item>
             <Link to={routes.WALL}>Wall</Link>
+          </Menu.Item>
+          <Menu.Item>
+            <Popover
+              placement={collapsed ? 'left' : 'bottomRight'}
+              title="Notifications"
+              content={<p>Hello</p>}
+              trigger={collapsed ? 'hover' : 'click'}
+            >
+              <div className="icon-bell">
+                <Icon
+                  type="bell"
+                />
+              </div>
+            </Popover>
           </Menu.Item>
           <Menu.SubMenu
             title={collapsed ? 'Profile' : (<div type="menu"><Avatar size={35} /></div>)}

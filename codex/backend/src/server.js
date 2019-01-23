@@ -121,7 +121,7 @@ app.get('/users/:id', isUserAuthenticated, (req, res, next) => {
 app.put('/users', isUserAuthenticated, (req, res, next) => {
   db.collection('users').doc(res.locals.user.id).update({
     nickname: req.body.nickname
-    // tags: req.body.tags
+    // tags: req.body.tags TODO
   })
     .then(() => res.sendStatus(200))
     .catch(next)
@@ -195,6 +195,7 @@ app.post('/posts', isUserAuthenticated, (req, res, next) => {
       tags: req.body.tags,
       content: req.body.content,
       creator_id: res.locals.user.id,
+      author: res.locals.user.nickname,
       claps: 0,
       creation_time: Date.now()
     }
@@ -258,6 +259,9 @@ app.get('/posts/search/:field/:query', isUserAuthenticated, (req, res, next) => 
       searchQuery = `description:${query}`
       break
     case 'author':
+      searchQuery = `author:${query}`
+      break
+    case 'user_id':
       searchQuery = `creator_id:${query}`
       break
     case 'content':
@@ -333,7 +337,6 @@ app.get('/wall', isUserAuthenticated, (req, res, next) => {
 app.get('/notif/:user_id', isUserAuthenticated, (req, res, next) => {
   const { lastSeen } = req.locals.user.lastSeen
   const tagsSubscribed = req.locals.user.tags
-
   esclient.search({
     index: 'posts',
     type: 'post',
@@ -360,7 +363,7 @@ app.get('/notif/:user_id', isUserAuthenticated, (req, res, next) => {
           tagCount.push({ tag: bucket.key, count: bucket.doc_count })
         }
       })
-      res.send(JSON.stringify(tagCount, null, 2))
+      res.send(tagCount)
     })
     .catch(next)
 })
@@ -375,14 +378,14 @@ app.put('/posts/:id/update-claps', isUserAuthenticated, (req, res, next) => {
     type: 'post',
     id: req.params.id,
     body: {
-      script: 'ctx._source.claps += 1',
+      script: `ctx._source.claps += ${req.body.claps}`,
       upsert: {
-        counter: 1
+        counter: req.body.claps
       }
     },
     retryOnConflict: 5 // concurrency conflict solving
   })
-    .then(() => res.status(200).send('OK'))
+    .then(() => res.sendStatus(200))
     .catch(next)
 })
 

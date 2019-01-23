@@ -63,6 +63,15 @@ $footer-height: 90px;
     line-height: $header-height;
   }
 
+  .icon-bell {
+    text-align: center;
+
+    .anticon-bell {
+      padding: 0 10px;
+      margin: 0;
+    }
+  }
+
   .menu {
     line-height: $header-height;
   }

@@ -16,7 +16,11 @@ const Main = (props) => {
   return (
     <Switch>
       <Route exact path={routes.HOME} component={HomePage} />
-      <Route exact path={routes.WALL} component={WallPage} />
+      <Route
+        exact
+        path={routes.WALL}
+        render={() => <WallPage authUser={authUser} idToken={idToken} />}
+      />
       <Route
         exact
         path={routes.PROFILE}
