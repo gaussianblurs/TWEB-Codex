@@ -292,9 +292,12 @@ app.get('/wall', isUserAuthenticated, (req, res, next) => {
   esclient.search({
     index: 'posts',
     type: 'post',
-    q: `tags:${res.locals.user.tags}`
+    q: `tags:${res.locals.user.tags}`,
+    from: req.query.offset,
+    size: req.query.pagesize,
+    sort : 'creation_time:desc'
   })
-    .then(posts => res.send(posts))
+    .then(posts => res.send(JSON.stringify(posts, null, 2)))
     .catch(next)
 })
 
