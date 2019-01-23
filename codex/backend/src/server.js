@@ -299,7 +299,7 @@ app.get('/wall', isUserAuthenticated, (req, res, next) => {
 })
 
 // Notifications
-app.get('/notif/:user_id', (req, res, next) => {
+app.get('/notif/:user_id', isUserAuthenticated, (req, res, next) => {
   const lastSeen = req.locals.user.lastSeen
   const tagsSubscribed = req.locals.user.tags
 
@@ -316,11 +316,9 @@ app.get('/notif/:user_id', (req, res, next) => {
         }
       },
       aggs: {
-          'tag' : { 
-            terms: {
-              field: 'tags.keyword'
-            }
-          }
+        'tag' : { 
+          terms: { field: 'tags.keyword' }
+        }
       }
     }
   })
