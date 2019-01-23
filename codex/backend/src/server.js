@@ -121,8 +121,8 @@ app.get('/users/:id', isUserAuthenticated, (req, res, next) => {
 // Update user
 app.put('/users', isUserAuthenticated, (req, res, next) => {
   db.collection('users').doc(res.locals.user.id).update({
-    nickname: req.body.nickname
-    // tags: req.body.tags TODO
+    nickname: req.body.nickname,
+    tags: decodeURIComponent(req.body.tags).split(',')
   })
     .then(() => res.sendStatus(200))
     .catch(next)

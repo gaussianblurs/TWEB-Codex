@@ -28,7 +28,8 @@ class NormalEditProfileForm extends React.Component {
 
   componentDidMount() {
     this.setState({
-      selectedItems: this.props.user.tags
+      selectedItems: this.props.user.tags,
+      nickname: this.props.user.nickname
     }, () => this.fetchTags(''))
   }
 
@@ -43,8 +44,11 @@ class NormalEditProfileForm extends React.Component {
   }
 
   handleSubmit = () => {
-    const { user } = this.this.props
+    const { user } = this.props
     const { nickname, selectedItems } = this.state
+
+    console.log(nickname)
+    console.log(selectedItems)
 
     if (user.nickname === nickname && user.tags.equals(selectedItems) ) {
       this.props.history.push(routes.PROFILE)
@@ -56,7 +60,8 @@ class NormalEditProfileForm extends React.Component {
             message.error('Nickname is already taken !')
           } else {
             axios.put('/users', {
-              nickname
+              nickname,
+              tags: encodeURIComponent(selectedItems)
             }, {
               headers: { Authorization: `Bearer: ${this.props.idToken}` }
             })
@@ -85,7 +90,7 @@ class NormalEditProfileForm extends React.Component {
     const filteredOptions = similarTags.filter(o => !selectedItems.includes(o))
 
     return (
-      <Form onSubmit={this.handleSubmit} className="login-form">
+      <Form className="login-form">
         <h2>Nickname</h2>
         <Form.Item>
           <Input
