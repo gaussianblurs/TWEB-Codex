@@ -95,9 +95,10 @@ const isUserAuthenticated = (req, res, next) => {
  */
 // Create a user
 app.post('/users', isUserAuthenticated, (req, res, next) => {
+  console.log(req.body.tags)
   db.collection('users').doc(req.body.uid).set({
     nickname: req.body.nickname,
-    tags: []
+    tags: req.body.tags
   })
     .then(() => res.sendStatus(201))
     .catch(next)
