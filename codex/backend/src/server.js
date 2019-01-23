@@ -196,7 +196,7 @@ app.post('/posts', isUserAuthenticated, (req, res, next) => {
  */
 function pushNewTags(newTags, storedTags = []) {
   newTags.forEach((tag) => {
-    if (!storedTags.find(t => t === tag)) {
+    if (!storedTags.includes(tag)) {
       esclient.index({
         index: 'tags',
         type: 'tag',
@@ -218,10 +218,9 @@ app.get('/posts/:id', isUserAuthenticated, (req, res, next) => {
     .catch(next)
 })
 
-
 // Find posts by single field
 app.get('/posts/search/:field/:query', isUserAuthenticated, (req, res, next) => {
-  const query = decodeURIComponent(req.params.query) // TODO encodeURI frontend
+  const query = decodeURIComponent(req.params.query)
   let searchQuery
   switch (req.params.field) {
     case 'title':
@@ -258,8 +257,8 @@ app.get('/posts/search/:query', isUserAuthenticated, (req, res, next) => {
   esclient.search({
     index: 'posts',
     q: `${req.params.query}`,
-    from: 0, // TODO pagination frontend?
-    size: 10
+    from: req.query.offset,
+    size: req.query.pagesize
   })
     .then(posts => res.send(posts))
     .catch(next)
@@ -299,11 +298,49 @@ app.get('/wall', isUserAuthenticated, (req, res, next) => {
     .catch(next)
 })
 
+// Notifications
+app.get('/notif/:user_id', (req, res, next) => {
+  const lastSeen = req.locals.user.lastSeen
+  const tagsSubscribed = req.locals.user.tags
+
+  esclient.search({
+    index: 'posts',
+    type: 'post',
+    body: {
+      query: {
+        bool: {
+          must: [ { range : { 'creation_time': { gt : lastSeen } } } ],
+          filter: {
+            terms : { 'tags.keyword' : tagsSubscribed }
+          }
+        }
+      },
+      aggs: {
+          'tag' : { 
+            terms: {
+              field: 'tags.keyword'
+            }
+          }
+      }
+    }
+  })
+    .then(result => {
+      tagCount = []
+      result.aggregations.tag.buckets.forEach(bucket => {
+        if (tagsSubscribed.includes(bucket.key)){
+          tagCount.push({ 'tag': bucket.key, 'count': bucket.doc_count})
+        } 
+      })
+      res.send(JSON.stringify(tagCount, null, 2))
+    })
+    .catch(next)
+})
+
 /**
  * CLAPS API
  */
 // increment claps to a post
-app.put('/posts/:id/update-claps', isUserAuthenticated, (req, res, next) => { // TODO prevent from direct access?
+app.put('/posts/:id/update-claps', isUserAuthenticated, (req, res, next) => {
   esclient.update({
     index: 'posts',
     type: 'post',
@@ -314,7 +351,7 @@ app.put('/posts/:id/update-claps', isUserAuthenticated, (req, res, next) => { //
         counter: 1
       }
     },
-    retryOnConflict: 5
+    retryOnConflict: 5  // concurrency conflict solving
   })
     .then(() => res.status(200).send('OK'))
     .catch(next)
