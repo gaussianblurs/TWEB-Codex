@@ -278,7 +278,7 @@ app.get('/posts/search/:field/:query', isUserAuthenticated, (req, res, next) => 
           },
           field_value_factor: {
             field: 'claps',
-            factor: 1.2,
+            factor: 0.8,
             modifier: 'log1p'
           }
         }
