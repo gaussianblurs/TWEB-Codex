@@ -5,11 +5,12 @@ import { Avatar, Button, Badge } from 'antd'
 import TimeAgo from 'react-timeago'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import tomorrow from 'react-syntax-highlighter/dist/styles/prism/tomorrow'
-import { FullClapIcon, OutlineClapIcon } from './utils/Icons'
+import { OutlineClapIcon } from './utils/Icons'
 
 const INITIAL_STATE = {
-  totalClaps: 100,
-  totalClapsBadge: 100,
+  post: [],
+  totalClaps: 0,
+  totalClapsBadge: 0,
   claps: 0,
   clapsInc: 0,
   clapsVisible: false,
@@ -21,6 +22,16 @@ class PostsListItem extends React.Component {
   constructor(props) {
     super(props)
     this.state = { ...INITIAL_STATE }
+  }
+
+
+
+  componentDidMount() {
+    const { claps } = this.props.post
+    this.setState({
+      totalClaps: claps,
+      totalClapsBadge: claps
+    })
   }
 
   computeTotal = () => {
@@ -73,13 +84,14 @@ class PostsListItem extends React.Component {
         <div className="post">
           <h2>{post.title}</h2>
           <div className="tags">
-            <Link to="/" style={{ margin: '0 5px 0 0' }}>#react</Link>
-            <Link to="/">#context</Link>
+            { post.tags.map(tag => (
+              <Link key={tag} to="/" style={{ margin: '0 7px 0 0' }}>{`#${tag}`}</Link>
+            ))}
           </div>
           <p className="description">{post.description}</p>
           <div className="code-container">
             <SyntaxHighlighter className="code" language="javascript" style={tomorrow}>
-              {post.code}
+              {post.content}
             </SyntaxHighlighter>
           </div>
           <div className="claps">
@@ -93,7 +105,7 @@ class PostsListItem extends React.Component {
             { this.displayCounter() }
           </div>
           <p className="post-date">
-            Posted&nbsp;<TimeAgo date='Feb 1, 1966' /> by <Link to="/">@psrochat</Link>
+            Posted&nbsp;<TimeAgo date={post.creation_time} /> by <Link to="/">@psrochat</Link>
           </p>
         </div>
       </div>
@@ -103,12 +115,16 @@ class PostsListItem extends React.Component {
 
 PostsListItem.propTypes = {
   post: PropTypes.shape({
-    id: PropTypes.number.isRequired,
+    creator_id: PropTypes.number.isRequired,
     title: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
-    code: PropTypes.string.isRequired,
+    content: PropTypes.string.isRequired,
+    tags: PropTypes.arrayOf(
+      PropTypes.string.isRequired
+    ).isRequired,
     claps: PropTypes.number.isRequired,
-    user: PropTypes.string.isRequired
+    user: PropTypes.string.isRequired,
+    creation_time: PropTypes.number.isRequired
   }).isRequired
 }
 

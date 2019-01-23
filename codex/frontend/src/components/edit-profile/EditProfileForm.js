@@ -16,7 +16,7 @@ const { Option } = Select
 
 const INITIAL_STATE = {
   similarTags: [],
-  value: []
+  selectedItems: []
 }
 
 class NormalEditProfileForm extends React.Component {
@@ -26,19 +26,19 @@ class NormalEditProfileForm extends React.Component {
   }
 
   componentDidMount() {
-    console.log(this.props)
     this.setState({
-      value: this.props.user.tags
-    })
+      selectedItems: this.props.user.tags
+    }, () => this.fetchTags(''))
   }
 
   fetchTags = (str) => {
-    console.log(str)
     axios.get(
       `/tags/${str}`,
       { headers: { Authorization: `Bearer: ${this.props.idToken}` } }
     )
-      .then(tags => this.setState({ similarTags: tags }))
+      .then((response) => {
+        this.setState({ similarTags: response.data })
+      })
   }
 
   handleSubmit = (e) => {
@@ -69,10 +69,15 @@ class NormalEditProfileForm extends React.Component {
     })
   }
 
+  handleChange = (selectedItems) => {
+    this.setState({ selectedItems })
+  }
+
   render() {
     const { getFieldDecorator } = this.props.form
-    const { value, similarTags } = this.state
+    const { selectedItems, similarTags } = this.state
     const { user } = this.props
+    const filteredOptions = similarTags.filter(o => !selectedItems.includes(o))
 
     return (
       <Form onSubmit={this.handleSubmit} className="login-form">
@@ -94,11 +99,11 @@ class NormalEditProfileForm extends React.Component {
           <Select
             mode="multiple"
             placeholder="Select tags"
-            defaultValue={user.tags}
+            value={selectedItems}
             onSearch={this.fetchTags}
             onChange={this.handleChange}
           >
-            { similarTags.map(tag => (
+            { filteredOptions.map(tag => (
               <Option key={tag} value={tag}>{tag}</Option>
             ))}
           </Select>
