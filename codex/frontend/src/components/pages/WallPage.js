@@ -103,11 +103,7 @@ class Wall extends React.Component {
   }
 
   render() {
-<<<<<<< HEAD
-    const { modalVisible, posts, tags } = this.state
-=======
-    const { modalVisible, posts, total } = this.state
->>>>>>> 1ac219b865750b9d25bd2717a4ef60ebedc586b9
+    const { modalVisible, posts, total, tags } = this.state
     const { idToken, authUser } = this.props
 
     return (
@@ -116,17 +112,14 @@ class Wall extends React.Component {
         <div>
           <Content>
             <div className="main-container">
-<<<<<<< HEAD
-              <Posts posts={posts} fetchMore={this.fetchMore} idToken={idToken} tags={tags} />
-=======
               <Posts
                 posts={posts}
                 total={total}
                 fetchMore={this.fetchMore}
                 hasMore={this.hasMore()}
                 idToken={idToken}
+                tags={tags}
               />
->>>>>>> 1ac219b865750b9d25bd2717a4ef60ebedc586b9
             </div>
             <div className="post-btn-container clearfix">
               <Tooltip placement="left" title="Create Post">

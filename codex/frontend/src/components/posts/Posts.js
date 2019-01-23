@@ -36,16 +36,12 @@ Posts.propTypes = {
     }).isRequired
   ).isRequired,
   fetchMore: PropTypes.func.isRequired,
-<<<<<<< HEAD
   idToken: PropTypes.string.isRequired,
   tags: PropTypes.arrayOf(
     PropTypes.string.isRequired
-  ).isRequired
-=======
+  ).isRequired,
   total: PropTypes.number.isRequired,
-  hasMore: PropTypes.bool.isRequired,
-  idToken: PropTypes.string.isRequired
->>>>>>> 1ac219b865750b9d25bd2717a4ef60ebedc586b9
+  hasMore: PropTypes.bool.isRequired
 }
 
 export default Posts
