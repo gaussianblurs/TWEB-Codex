@@ -1,1 +1,36 @@
 @import './Default.scss';
+
+.home-logo {
+  margin-top: calc((100% / 2) - 90px);
+
+  &::after {
+    clear: both;
+  }
+
+  .img {
+    float: left;
+    display: inline-block;
+    margin-right: 40px;
+  }
+
+  .text {
+    float: right;
+    display: inline-block;
+    text-align: left;
+
+    .title {
+      margin: 0;
+      padding: 0;
+      font-size: 100px;
+      line-height: 100px;
+      color: black;
+    }
+
+    .subtitle {
+      line-height: 50px;
+      padding: 0;
+      margin: 0;
+      font-size: 30px;
+    }
+  }
+}

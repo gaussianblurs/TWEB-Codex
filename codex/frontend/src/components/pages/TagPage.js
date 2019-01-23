@@ -94,17 +94,6 @@ class TagPage extends React.Component {
             tags={tags}
           />
         </div>
-        <div className="post-btn-container clearfix">
-          <Tooltip placement="left" title="Create Post">
-            <Button
-              type="primary"
-              className="post-btn"
-              onClick={() => this.setModalVisible(true)}
-              shape="circle"
-              icon="plus"
-            />
-          </Tooltip>
-        </div>
       </Content>
     )
   }

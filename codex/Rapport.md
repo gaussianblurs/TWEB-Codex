@@ -12,7 +12,7 @@ Results are then sorted by accuracy and "claps" (a variant of "likes" used by th
 For example, if a user searches for "react proptypes", a list of code samples featuring
 React PropTypes usage, sorted by quality/relevance is returned.
 
-## Resource
+## Resource shared
 The users share Markdown formatted code. They also provide a brief title and description. Additionally, they provide hashtags (#) that describe the content of their publication.
 
 ## Technologies
@@ -43,12 +43,52 @@ The users share Markdown formatted code. They also provide a brief title and des
 - Database: probably GCP (Google Cloud Platform)
 
 ## Report
-TODO
+### Frontend choices
+We chose Ant Design React because of all the features available, it's a clear and professional design. 
 
-### Frontend
-TODO
+Our pages handle pagination through infinite scroll. 
 
-### Backend
-The backend runs on Node.js providing a RESTful API to the frontend. To connect Node.js and the elasticsearch containers, the elasticsearch.js library is used.   
-As stated in the Technologies section, two different databases were setup for this project: in addition to the Firebase authentication service, which stores emails, passwords and unique identifiers of the users, the application is connected to a Firestore database for storing users' informations such as nickname and subscribed tags, and to an Elasticsearch database for storing users' posts.   
-When posting a new post which contains tags to the database, it is necessary to check if the "tags" index has been created, and if not, create it and add the new tags to the database. To avoid duplicate tags, it is necessary to first query all tags from the database, then add only those that are not already present.
+The selection radio buttons are all directly visible from the wall as we thought that developers know exactly what they are looking for and this should be chosen with one click.
+
+### Backend choices
+
+To store the data shared across  the platform, it appeared clear to us to use elasticsearch as it is based on Lucene and could fit the best our requirements which are :
+
+- The content shared across the platform is small portions of code, thus textual
+- Programming languages have several reserved word which are often irrelevant when searching specific use cases
+- Queries have to be fast to have a good user experience with the frontend. This can be done with the inverted index used in elastic searching
+
+As it is unnecessary to store the users informations in elasticsearch, we chose a simple and powerful Google service FireBase
+
+- The Firestore Cloud database stores user related content
+- FireBase also allows easy authentication mechanism with Firebase
+
+
+
+The programming language chosen is javascript with elasticsearch.js library and express for the REST API.
+
+Documents stored :
+
+* Posts  : the main data exchanged, contains : id, title, description, content, tags, author_id, author name
+
+* Tags : we store tags globally to help users find content (with autocompletion)
+
+  
+
+* Users :  picture, nickname, email, password, identifier
+
+### Usage walkthrough
+
+* The user registers to the sign up page
+  * The user can directly access the wall page without confirmation
+* The user is now able to create posts, search for posts through different fields
+* From any posts, the user can click on the tag to see related posts (tag page)
+  * The user can subscribe to a tag when on a tag page
+
+* Profile page is accessible to modify personal data, see subscriptions
+
+### Tests
+
+* Database content verification with Kibana
+* Simple shell script testing on concurrent clap incrementation shown that `retryOnConflict` has to be set to to avoid misbehaviors (set it to 5).
+
