@@ -241,7 +241,7 @@ app.get('/posts/:id', isUserAuthenticated, (req, res, next) => {
 
 // Find posts by single field
 app.get('/posts/search/:field/:query', isUserAuthenticated, (req, res, next) => {
-  const query = decodeURIComponent(req.params.query)
+  let { query } = req.params
   let searchQuery
   switch (req.params.field) {
     case 'title':
@@ -260,6 +260,7 @@ app.get('/posts/search/:field/:query', isUserAuthenticated, (req, res, next) => 
       searchQuery = `content:${query}`
       break
     case 'tags':
+      query = decodeURIComponent(req.params.query).split(',')
       searchQuery = `tags:${query}`
       break
     default:

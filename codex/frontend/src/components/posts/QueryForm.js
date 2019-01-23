@@ -8,13 +8,20 @@ import {
   Button,
   Select
 } from 'antd'
+import axios from '../../axios'
 
 const { Option } = Select
 
 const INITIAL_STATE = {
   posts: [],
   query: '',
-  tags: []
+  tags: [],
+  selectedItems: [],
+  similarTags: [],
+  tagSelection: false,
+  user: null,
+  hasLoaded: false,
+  field: null
 }
 
 class QueryForm extends React.Component {
@@ -23,17 +30,23 @@ class QueryForm extends React.Component {
     this.state = { ...INITIAL_STATE }
   }
 
-  hasErrors = fieldsError => Object.keys(fieldsError).some(field => fieldsError[field])
-
   handleRadioChange = (e) => {
     e.preventDefault()
     this.setState({
-      tagSelection: e.target.value === 'tag'
+      tagSelection: e.target.value === 'tags',
+      field: e.target.value
     })
   }
 
   handleSubmit = () => {
+    const { tagSelection, query, selectedItems, field } = this.state
+    const { handleSearch } = this.props
 
+    if (tagSelection && selectedItems.length !== 0) {
+      handleSearch(field, encodeURIComponent(selectedItems))
+    } else if (query !== '') {
+      handleSearch(field, query)
+    }
   }
 
   handleQueryChange = (e) => {
@@ -41,25 +54,46 @@ class QueryForm extends React.Component {
     this.setState({ query: e.target.value })
   }
 
+  fetchTags = (str) => {
+    axios.get(
+      `/tags/${str}`,
+      { headers: { Authorization: `Bearer: ${this.props.idToken}` } }
+    )
+      .then((response) => {
+        this.setState({ similarTags: response.data })
+      })
+  }
+
+  handleChange = (selectedItems) => {
+    this.setState({ selectedItems })
+  }
+
   render() {
-    const { tagSelection } = this.state
+    const { tagSelection, selectedItems, similarTags } = this.state
+    const filteredOptions = similarTags.filter(o => !selectedItems.includes(o))
 
     return (
-      <Form layout="inline" onSubmit={this.handleSubmit}>
+      <Form layout="inline">
         <Form.Item>
           <Radio.Group onChange={this.handleRadioChange}>
             <Radio value="title">Title</Radio>
             <Radio value="description">Description</Radio>
             <Radio value="code">Code</Radio>
-            <Radio value="tag">Tag</Radio>
+            <Radio value="tags">Tags</Radio>
           </Radio.Group>
         </Form.Item>
         { tagSelection ? (
           <Form.Item help="">
-            <Select mode="multiple" placeholder="Select tags">
-              <Option value="red">Red</Option>
-              <Option value="green">Green</Option>
-              <Option value="blue">Blue</Option>
+            <Select
+              mode="multiple"
+              placeholder="Select tags"
+              value={selectedItems}
+              onSearch={this.fetchTags}
+              onChange={this.handleChange}
+            >
+              { filteredOptions.map(tag => (
+                <Option key={tag} value={tag}>{tag}</Option>
+              ))}
             </Select>
           </Form.Item>
         ) : (
@@ -79,6 +113,7 @@ class QueryForm extends React.Component {
             type="primary"
             htmlType="submit"
             shape="circle"
+            onClick={this.handleSubmit}
           >
             <Icon type="search" />
           </Button>
@@ -89,6 +124,12 @@ class QueryForm extends React.Component {
 }
 
 QueryForm.propTypes = {
+  idToken: PropTypes.string.isRequired,
+  authUser: PropTypes.shape({
+    uid: PropTypes.string.isRequired,
+    email: PropTypes.string.isRequired
+  }).isRequired,
+  handleSearch: PropTypes.func.isRequired
 }
 
 export default QueryForm

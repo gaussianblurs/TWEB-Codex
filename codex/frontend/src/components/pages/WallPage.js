@@ -44,14 +44,18 @@ class Wall extends React.Component {
       })
   }
 
-  fetchPosts = () => {
-    // axios.get(
-    //   `/posts/search/${}/:query`,
-    //   { headers: { Authorization: `Bearer: ${this.props.idToken}` } }
-    // )
-    //   .then((response) => {
-    //     console.log('hello')
-    //   })
+  fetchPosts = (field, query) => {
+    axios.get(
+      `/posts/search/${field}/${query}`,
+      { headers: { Authorization: `Bearer: ${this.props.idToken}` } }
+    )
+      .then((response) => {
+        const posts = response.data.hits.hits.map((post) => {
+          const newPost = { ...post._source, id: post._id }
+          return newPost
+        })
+        this.setState({ posts })
+      })
   }
 
   fetchMore = () => {
@@ -60,11 +64,11 @@ class Wall extends React.Component {
 
   render() {
     const { modalVisible, posts } = this.state
-    const { idToken } = this.props
+    const { idToken, authUser } = this.props
 
     return (
       <React.Fragment>
-        <SearchHeader />
+        <SearchHeader authUser={authUser} idToken={idToken} handleSearch={this.fetchPosts} />
         <div>
           <Content>
             <div className="main-container">

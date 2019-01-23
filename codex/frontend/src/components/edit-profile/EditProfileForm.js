@@ -47,16 +47,13 @@ class NormalEditProfileForm extends React.Component {
     const { user } = this.props
     const { nickname, selectedItems } = this.state
 
-    console.log(nickname)
-    console.log(selectedItems)
-
-    if (user.nickname === nickname && user.tags.equals(selectedItems) ) {
+    if (user.nickname === nickname && JSON.stringify(user.tags) === JSON.stringify(selectedItems)) {
       this.props.history.push(routes.PROFILE)
     } else {
       axios.get(`/users/nickname/${nickname}`)
         .then(response => response.data)
         .then((userExists) => {
-          if (userExists) {
+          if (userExists && nickname !== user.nickname) {
             message.error('Nickname is already taken !')
           } else {
             axios.put('/users', {
@@ -65,7 +62,10 @@ class NormalEditProfileForm extends React.Component {
             }, {
               headers: { Authorization: `Bearer: ${this.props.idToken}` }
             })
-              .then(() => this.props.history.push(routes.PROFILE))
+              .then(() => {
+                message.success('Success !')
+                this.props.history.push(routes.PROFILE)
+              })
               .catch(error => message.error(error.message))
           }
         })

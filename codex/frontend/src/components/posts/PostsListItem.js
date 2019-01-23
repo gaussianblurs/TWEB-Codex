@@ -25,7 +25,6 @@ class PostsListItem extends React.Component {
   }
 
   componentDidMount() {
-    console.log(this.props)
     const { claps } = this.props.post
     this.setState({
       totalClaps: claps,

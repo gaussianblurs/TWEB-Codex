@@ -77,7 +77,7 @@ class EditProfilePage extends React.Component {
     const server = {
       url: 'http://localhost:8081',
       process: {
-        url: '/collaborator/updateimage',
+        url: '/user/updateimage',
         method: 'POST',
         withCredentials: false,
         headers: { Authorization: `Bearer ${this.props.idToken}` },
