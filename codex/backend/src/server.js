@@ -145,7 +145,6 @@ app.get('/users/nickname/:nickname', (req, res, next) => {
 
 // User subscribtion to a tag
 app.put('/tags/:tag/subscribe', isUserAuthenticated, (req, res, next) => {
-  console.log(req.params.tag)
   db.collection('users').doc(res.locals.user.id).update({
     tags: firebase.firestore.FieldValue.arrayUnion(req.params.tag)
   })
