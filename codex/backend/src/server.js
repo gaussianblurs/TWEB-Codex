@@ -327,7 +327,7 @@ app.get('/posts/search/:query', isUserAuthenticated, (req, res, next) => {
           },
           field_value_factor: {
             field: 'claps',
-            factor: 1.2,
+            factor: 0.8,
             modifier: 'log1p'
           }
         }
@@ -483,7 +483,7 @@ app.get('/tags/:tag', isUserAuthenticated, (req, res, next) => {
   esclient.search({
     index: 'tags',
     type: 'tag',
-    q: `tag:${req.params.tag}*`,
+    q: `tag:${req.params.tag}*`
   })
     .then((result) => {
       const tags = []
