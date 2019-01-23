@@ -239,6 +239,17 @@ app.get('/posts/:id', isUserAuthenticated, (req, res, next) => {
     .catch(next)
 })
 
+// Find a post by its author id
+app.get('/posts/:user_id', isUserAuthenticated, (req, res, next) => {
+  esclient.search({
+    index: 'posts',
+    q: ` creator_id:${req.params.user_id}`,
+    sort: 'creation_time:desc'
+  })
+    .then(post => res.send(post))
+    .catch(next)
+})
+
 // Find posts by single field
 app.get('/posts/search/:field/:query', isUserAuthenticated, (req, res, next) => {
   const query = decodeURIComponent(req.params.query)
