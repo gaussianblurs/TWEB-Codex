@@ -6,7 +6,7 @@ import '../../assets/scss/HomePage.scss'
 const { Content } = Layout
 
 const Home = () => (
-  <Content>
+  <Content className="main-container">
     <h1>Home</h1>
   </Content>
 )
