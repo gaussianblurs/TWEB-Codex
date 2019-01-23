@@ -59,7 +59,6 @@ class NormalEditProfileForm extends React.Component {
           if (userExists) {
             message.error('Nickname is already taken !')
           } else {
-            console.log(encodeURIComponent(selectedItems))
             axios.put('/users', {
               nickname,
               tags: encodeURIComponent(selectedItems)

@@ -95,10 +95,9 @@ const isUserAuthenticated = (req, res, next) => {
  */
 // Create a user
 app.post('/users', isUserAuthenticated, (req, res, next) => {
-  console.log(req.body.tags)
   db.collection('users').doc(req.body.uid).set({
     nickname: req.body.nickname,
-    tags: req.body.tags
+    tags: []
   })
     .then(() => res.sendStatus(201))
     .catch(next)
@@ -121,8 +120,8 @@ app.get('/users/:id', isUserAuthenticated, (req, res, next) => {
 // Update user
 app.put('/users', isUserAuthenticated, (req, res, next) => {
   db.collection('users').doc(res.locals.user.id).update({
-    nickname: req.body.nickname
-    // tags: req.body.tags TODO
+    nickname: req.body.nickname,
+    tags: decodeURIComponent(req.body.tags).split(',')
   })
     .then(() => res.sendStatus(200))
     .catch(next)
@@ -235,17 +234,6 @@ app.get('/posts/:id', isUserAuthenticated, (req, res, next) => {
   esclient.search({
     index: 'posts',
     q: `_id:${req.params.id}`
-  })
-    .then(post => res.send(post))
-    .catch(next)
-})
-
-// Find a post by its author id
-app.get('/posts/:user_id', isUserAuthenticated, (req, res, next) => {
-  esclient.search({
-    index: 'posts',
-    q: ` creator_id:${req.params.user_id}`,
-    sort: 'creation_time:desc'
   })
     .then(post => res.send(post))
     .catch(next)
