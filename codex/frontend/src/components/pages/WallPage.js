@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Layout, Button, Tooltip } from 'antd'
+import { Layout, Button, Tooltip, message } from 'antd'
 import withAuthorization from '../withAuthorization'
 import Posts from '../posts/Posts'
 import SearchHeader from '../posts/SearchHeader'
@@ -14,6 +14,7 @@ const { Content } = Layout
 const INITIAL_STATE = {
   posts: [],
   modalVisible: false,
+  tags: [],
   page: 1,
   pageSize: 5,
   total: 0
@@ -27,6 +28,7 @@ class Wall extends React.Component {
 
   componentDidMount() {
     this.fetchWall()
+    this.fetchUser()
   }
 
   setModalVisible = (modalVisible) => {
@@ -50,6 +52,7 @@ class Wall extends React.Component {
           page: prevState.page + 1
         }))
       })
+      .catch(error => message.error(error.message))
   }
 
   fetchMore = () => {
@@ -84,10 +87,23 @@ class Wall extends React.Component {
         })
         this.setState({ posts })
       })
+      .catch(error => message.error(error.message))
+  }
+
+  fetchUser = () => {
+    axios.get(`/users/${this.props.authUser.uid}`, {
+      headers: { Authorization: `Bearer: ${this.props.idToken}` }
+    })
+      .then((response) => {
+        this.setState({
+          tags: response.data.tags
+        })
+      })
+      .catch(error => message.error(error.message))
   }
 
   render() {
-    const { modalVisible, posts, total } = this.state
+    const { modalVisible, posts, total, tags } = this.state
     const { idToken, authUser } = this.props
 
     return (
@@ -102,6 +118,7 @@ class Wall extends React.Component {
                 fetchMore={this.fetchMore}
                 hasMore={this.hasMore()}
                 idToken={idToken}
+                tags={tags}
               />
             </div>
             <div className="post-btn-container clearfix">

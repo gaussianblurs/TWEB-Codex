@@ -9,6 +9,7 @@ import SignInPage from './pages/SignInPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import ProfilePage from './pages/ProfilePage'
 import EditProfilePage from './pages/EditProfilePage'
+import TagPage from './pages/TagPage'
 // import PasswordForget from './pages/PasswordForget'
 
 const Main = (props) => {
@@ -24,6 +25,10 @@ const Main = (props) => {
       <Route
         path={`${routes.PROFILE}/:id`}
         render={() => <ProfilePage authUser={authUser} idToken={idToken} />}
+      />
+      <Route
+        path={`${routes.TAG}/:tag`}
+        render={() => <TagPage authUser={authUser} idToken={idToken} />}
       />
       <Route
         exact

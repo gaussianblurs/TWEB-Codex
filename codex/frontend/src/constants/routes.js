@@ -1,6 +1,7 @@
 export const SIGN_UP = '/signup'
 export const SIGN_IN = '/signin'
 export const FORGOT_PASSWORD = '/forgot-password'
+export const TAG = '/tag'
 export const HOME = '/'
 export const WALL = '/wall'
 export const PROFILE = '/profile'
