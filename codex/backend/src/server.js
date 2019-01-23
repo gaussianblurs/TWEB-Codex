@@ -105,6 +105,7 @@ app.post('/users', isUserAuthenticated, (req, res, next) => {
 
 // Get a single user by its id
 app.get('/users/:id', isUserAuthenticated, (req, res, next) => {
+  console.log(`id: ${req.params.id}`)
   db.collection('users').doc(req.params.id).get()
     .then((doc) => {
       if (doc.exists) {
