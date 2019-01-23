@@ -201,22 +201,38 @@ app.post('/posts', isUserAuthenticated, (req, res, next) => {
     }
   })
     .then(() => {
-      res.sendStatus(201)
-      // add new tags to DB
-      esclient.search({
-        index: 'tags',
-        type: 'tag'
+      // handle tags
+      esclient.indices.exists({
+        index: 'tags'
       })
-        .then((result) => {
-          // eslint-disable-next-line no-underscore-dangle
-          const tags = result.hits.hits.map(item => item._source.tag)
-          pushNewTags(req.body.tags, tags)
+        .then((exist) => {
+          if (!exist) {
+            // tags index verification (first post)
+            req.body.tags.forEach((tag) => {
+              esclient.index({
+                index: 'tags',
+                type: 'tag',
+                body: {
+                  tag
+                }
+              })
+            })
+          } else {
+            // add new tags to DB
+            esclient.search({
+              index: 'tags',
+              type: 'tag'
+            })
+              .then((result) => {
+                // eslint-disable-next-line no-underscore-dangle
+                const tags = result.hits.hits.map(item => item._source.tag)
+                pushNewTags(req.body.tags, tags)
+              })
+              .catch(next)
+          }
+          res.sendStatus(201)
         })
-        .catch((error) => {
-          console.error(error)
-          // tags index not set, happens for the first post ever
-          pushNewTags(req.body.tags)
-        })
+        .catch(next)
     })
     .catch(next)
 })
@@ -338,9 +354,12 @@ app.get('/wall', isUserAuthenticated, (req, res, next) => {
   esclient.search({
     index: 'posts',
     type: 'post',
-    q: `tags:${res.locals.user.tags}`
+    q: `tags:${res.locals.user.tags}`,
+    from: req.query.offset,
+    size: req.query.pagesize,
+    sort : 'creation_time:desc'
   })
-    .then(posts => res.send(posts))
+    .then(posts => res.send(JSON.stringify(posts, null, 2)))
     .catch(next)
 })
 
